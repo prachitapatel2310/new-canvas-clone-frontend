@@ -6,11 +6,11 @@ export default function Lab1() {
     <div id="wd-lab1">
       <h2>Lab 1</h2>
       <h3>HTML Examples</h3>
-      // Heading tag
+      {/* // Heading tag */}
       <div id="wd-h-tag">
         <h4>Heading Tags</h4>
         Text documents are often broken up into several sections and subsections. Each section is usually prefaced with a short title or heading that attempts to summarize the topic of the section it precedes. For instance this paragraph is preceded by the heading Heading Tags. The font of the section headings are usually larger and bolder than their subsection headings.
-        // paragraph tag
+        {/* // paragraph tag */}
         <div id="wd-p-tag">
           <h4>Paragraph Tag</h4>
           <p id="wd-p1">
@@ -32,7 +32,7 @@ export default function Lab1() {
           </p>
         </div>
       </div>
-      // List tag
+      {/* // List tag */}
       <div id="wd-lists">
         <h4>List Tags</h4>
         <h5>Ordered List Tag</h5>
@@ -87,7 +87,7 @@ export default function Lab1() {
           <li>Pride and Prejudice</li>
         </ul>
       </div>
-      // Tables Tag
+      {/* // Tables Tag */}
       <div id="wd-tables">
         <h4>Table Tag</h4>
         <table border={1} width="100%">
@@ -121,7 +121,7 @@ export default function Lab1() {
           </tfoot>
         </table>
       </div>
-      // Image tag
+      {/* // Image tag */}
       <div id="wd-images">
         <h4>Image tag</h4>
         Loading an image from the internet: <br />
