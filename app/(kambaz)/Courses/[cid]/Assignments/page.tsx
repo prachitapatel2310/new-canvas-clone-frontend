@@ -1,4 +1,3 @@
-import Modules from "../Modules/page";
 import Navigation from "../Navigation";
 export default function Assignments({ params }: { params: Record<string, string> }) {
     const { cid } = params;

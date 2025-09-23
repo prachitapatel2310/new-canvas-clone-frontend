@@ -75,7 +75,7 @@ export default function Lab1() {
         <ul id="wd-my-books">
           <li>Dune</li>
           <li>Lord of the Rings</li>
-          <li>Ender's Game</li>
+          <li>Enders Game</li>
           <li>Red Mars</li>
           <li>The Forever War</li>
         </ul>
