@@ -1,4 +1,4 @@
-import Navigation from "../Navigation";
+import Navigation from "../../Navigation";
 export default function People({ params }: { params: { cid: string } }) {
   const { cid } = params;
   return (
