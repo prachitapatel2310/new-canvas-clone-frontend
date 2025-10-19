@@ -10,7 +10,7 @@ interface CourseNavigationProps {
 export default function CourseNavigation({ cid }: CourseNavigationProps) {
   const pathname = usePathname();
 
-  
+
   const links = [
     { href: `/Courses/${cid}/Home`, id: "wd-course-home-link", label: "Home" },
     { href: `/Courses/${cid}/Modules`, id: "wd-course-modules-link", label: "Modules" },

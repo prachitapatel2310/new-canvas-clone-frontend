@@ -14,18 +14,17 @@ export default function CoursesLayout({ children, params }: CoursesLayoutProps) 
 
   return (
     <div className="d-flex">
-      {/* Kambaz Navigation */}
-      <div className="d-none d-md-block">
+      
         <KambazNavigation />
-      </div>
+      
 
-      {/* Course Navigation with 10px gap from Kambaz nav */}
-      <div className="d-none d-md-block" style={{ marginLeft: '10px' }}>
+      {/* Course Navigation */}
+      <div className="d-none d-md-block" style={{ marginLeft: '130px' }}>
         <CourseNavigation cid={cid} />
       </div>
 
-      {/* Main content area */}
-      <div className="flex-fill" style={{ marginLeft: '10px' }}>
+      {/* Main content */}
+      <div className="flex-fill">
         {children}
       </div>
     </div>

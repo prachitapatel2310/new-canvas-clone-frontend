@@ -32,7 +32,7 @@ export default function Dashboard() {
                   >
                     <CardImg
                       variant="top"
-                      src="https://via.placeholder.com/300x160/4A90E2/FFFFFF?text=React+JS"
+                      src="https://placehold.co/300x160/4A90E2/FFFFFF?text=React+JS"
                       style={{ height: "160px", objectFit: "cover" }}
                     />
                     <CardBody>
@@ -57,7 +57,7 @@ export default function Dashboard() {
                   >
                     <CardImg
                       variant="top"
-                      src="https://via.placeholder.com/300x160/E67E22/FFFFFF?text=HTML+CSS"
+                      src="https://placehold.co/300x160/E67E22/FFFFFF?text=HTML+CSS"
                       style={{ height: "160px", objectFit: "cover" }}
                     />
                     <CardBody>
@@ -82,7 +82,7 @@ export default function Dashboard() {
                   >
                     <CardImg
                       variant="top"
-                      src="https://via.placeholder.com/300x160/E74C3C/FFFFFF?text=Java"
+                      src="https://placehold.co/300x160/E74C3C/FFFFFF?text=Java"
                       style={{ height: "160px", objectFit: "cover" }}
                     />
                     <CardBody>
@@ -107,7 +107,7 @@ export default function Dashboard() {
                   >
                     <CardImg
                       variant="top"
-                      src="https://via.placeholder.com/300x160/9B59B6/FFFFFF?text=Machine+Learning"
+                      src="https://placehold.co/300x160/9B59B6/FFFFFF?text=Machine+Learning"
                       style={{ height: "160px", objectFit: "cover" }}
                     />
                     <CardBody>
@@ -132,7 +132,7 @@ export default function Dashboard() {
                   >
                     <CardImg
                       variant="top"
-                      src="https://via.placeholder.com/300x160/27AE60/FFFFFF?text=Python"
+                      src="https://placehold.co/300x160/27AE60/FFFFFF?text=Python"
                       style={{ height: "160px", objectFit: "cover" }}
                     />
                     <CardBody>
@@ -157,7 +157,7 @@ export default function Dashboard() {
                   >
                     <CardImg
                       variant="top"
-                      src="https://via.placeholder.com/300x160/16A085/FFFFFF?text=Database+Design"
+                      src="https://placehold.co/300x160/16A085/FFFFFF?text=Database+Design"
                       style={{ height: "160px", objectFit: "cover" }}
                     />
                     <CardBody>
@@ -182,7 +182,7 @@ export default function Dashboard() {
                   >
                     <CardImg
                       variant="top"
-                      src="https://via.placeholder.com/300x160/34495E/FFFFFF?text=Mobile+Dev"
+                      src="https://placehold.co/300x160/34495E/FFFFFF?text=Mobile+Dev"
                       style={{ height: "160px", objectFit: "cover" }}
                     />
                     <CardBody>

@@ -9,65 +9,55 @@ body * {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Kambaz Navigation - Fixed sidebar */
-#wd-kambaz-navigation {
-  width: 120px;
+/* Account Navigation - positioned right after Kambaz nav (120px wide) */
+/* #wd-account-navigation {
+  width: 240px;
   position: fixed;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  z-index: 1000;
-}
-
-/* Main content offset for Kambaz nav only */
-.wd-main-content-offset {
-  margin-left: 140px;
-}
-
-/* Course Navigation - positioned right after Kambaz nav */
-#wd-courses-navigation {
-  width: 250px;
-  position: fixed;
-  left: 120px; /* Sits right next to Kambaz nav (no gap) */
+  left: 240px;
   top: 0;
   bottom: 0;
   background-color: white;
   border-right: 1px solid #dee2e6;
   overflow-y: auto;
-  z-index: 100;
-}
+  z-index: 999;
+  padding: 10px;
+} */
 
-/* Course Navigation styling */
-.list-group.wd {
-  margin: 0;
-  padding: 0;
-}
-
-.list-group.wd > .list-group-item {
+#wd-account-navigation>.list-group-item {
   cursor: pointer;
-  padding: 15px 20px;
+  padding: 15px 10px;
   border: none;
   border-left: 3px solid transparent;
-  background-color: white;
-  color: red; /* Inactive links are red */
-  text-decoration: none;
+  font-size: 0.9rem;
+  text-align: center;
 }
 
-/* Active state */
-.list-group.wd > .list-group-item.wd-active {
+#wd-account-navigation>.list-group-item.wd-active {
   color: black !important;
   background-color: white !important;
   border-left: 3px solid black !important;
 }
 
-/* Hover effect */
-.list-group.wd > .list-group-item:hover {
+#wd-account-navigation>.list-group-item:hover {
   background-color: #f5f5f5;
-  color: black;
 }
 
-/* Account Navigation - same styling as Course Navigation */
-#wd-account-navigation {
+/* Main content offset */
+.wd-main-content-offset {
+  margin-left: 120px;
+  padding: 20px;
+  width: 100%;
+}
+
+/* Account page content offset: 120px (Kambaz) + 120px (Account) = 240px */
+.wd-account-content-offset {
+  margin-left: 240px !important;
+  padding: 20px;
+  width: 100%;
+}
+
+/* Course Navigation - positioned right after Kambaz nav */
+#wd-courses-navigation {
   width: 250px;
   position: fixed;
   left: 120px;
@@ -76,28 +66,39 @@ body * {
   background-color: white;
   border-right: 1px solid #dee2e6;
   overflow-y: auto;
-  z-index: 100;
-  padding: 10px;
+  z-index: 999;
 }
 
-#wd-account-navigation > .list-group-item {
+/* Course Navigation styling */
+.list-group.wd {
+  margin: 0;
+  padding: 0;
+}
+
+.list-group.wd>.list-group-item {
   cursor: pointer;
   padding: 15px 20px;
   border: none;
   border-left: 3px solid transparent;
+  background-color: white;
+  color: red;
+  text-decoration: none;
 }
 
-#wd-account-navigation > .list-group-item.active {
+/* Active state */
+.list-group.wd>.list-group-item.wd-active {
   color: black !important;
   background-color: white !important;
   border-left: 3px solid black !important;
 }
 
-#wd-account-navigation > .list-group-item:hover {
+/* Hover effect */
+.list-group.wd>.list-group-item:hover {
   background-color: #f5f5f5;
+  color: black;
 }
 
-/* Bootstrap overrides for secondary button and background */
+/* Bootstrap overrides */
 .btn-secondary {
   --bs-btn-color: #000 !important;
   --bs-btn-bg: #c7cdd1 !important;
@@ -122,57 +123,16 @@ body * {
   border-left: 3px solid green !important;
 }
 
-/* Sidebar */
-.kambaz-sidebar {
-  width: 120px;
-  background: black;
-  position: fixed;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  z-index: 1000;
-  transition: transform 0.3s ease-in-out;
-}
-
-/* Mobile responsive */
-@media (max-width: 767px) {
-  .wd-main-content-offset {
-    margin-left: 0;
+/* Mobile responsive - screens 567px and smaller */
+@media (max-width: 567px) {
+  .wd-main-content-offset,
+  .wd-account-content-offset {
+    margin-left: 0 !important;
+    padding-top: 80px;
   }
 
-  /* Sidebar hidden by default */
-  .kambaz-sidebar {
-    transform: translateX(-100%);
-  }
-
-  /* Sidebar shown when .open is applied */
-  .kambaz-sidebar.open {
-    transform: translateX(0);
-  }
-
-  /* Hamburger button */
-  .hamburger-btn {
-    position: fixed;
-    top: 15px;
-    left: 15px;
-    background: white;
-    border: none;
-    color: black;
-    z-index: 1100;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-
-  /* Close button inside sidebar */
-  .close-btn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: transparent;
-    border: none;
-    color: white;
-    z-index: 1101;
-    cursor: pointer;
+  #wd-courses-navigation,
+  #wd-account-navigation {
+    left: 0;
   }
 }

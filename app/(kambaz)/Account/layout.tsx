@@ -41,11 +41,9 @@ export default function AccountLayout({ children }: Readonly<{ children: ReactNo
 
   return (
     <div className="d-flex">
-      <div className="d-none d-md-block">
         <KambazNavigation />
-      </div>
       
-      <div className="d-none d-md-block" style={{ marginLeft: '130px' }}>
+      <div style={{ marginLeft: '130px' }}>
         <AccountNavigation activePage={getActivePage()} />
       </div>
       
@@ -55,3 +53,41 @@ export default function AccountLayout({ children }: Readonly<{ children: ReactNo
     </div>
   );
 }
+
+
+// 'use client';
+
+// import { ReactNode } from "react";
+// import { usePathname } from "next/navigation";
+// import AccountNavigation from "./Navigation";
+// import KambazNavigation from "../Navigation";
+
+// export default function AccountLayout({ 
+//   children 
+// }: Readonly<{ children: ReactNode }>) {
+//   const pathname = usePathname();
+  
+//   const getActivePage = () => {
+//     if (pathname.includes("/Signin")) return "Signin";
+//     if (pathname.includes("/Signup")) return "Signup";
+//     if (pathname.includes("/Profile")) return "Profile";
+//     return "Signin";
+//   };
+
+//   return (
+//    <>
+//       <KambazNavigation />
+    
+//       {/* Account Navigation - Don't wrap KambazNav here, it's in parent layout */}
+//       <div className="d-none d-md-block">
+//         <AccountNavigation activePage={getActivePage()} />
+//       </div>
+      
+//       {/* Use the proper offset class */}
+//       <div className="wd-account-content-offset">
+//         {children}
+//       </div>
+      
+//     </>
+    
+//   );
