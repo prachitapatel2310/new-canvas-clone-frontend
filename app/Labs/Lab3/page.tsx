@@ -30,16 +30,19 @@ import Add from "./Add";
 import Square from "./Square";
 import Highlight from "./Highlight";
 import PathParameters from "./PathParameters";
+import TodoItem from "./todos/TodoItem";
 import TodoList from "./todos/TodoList";
 
 export default function Lab3() {
+  console.log('Hello World!');
   return (
     <div>
       <h2>Lab 3</h2>
+      <h2>Java Script</h2>
       <hr />
       <VariablesAndConstants />
       <VariableTypes />
-      <BooleanVariables /> 
+      <BooleanVariables />
       <IfElse />
       <TernaryOperator />
       <ConditionalOutputIfElse />
@@ -74,6 +77,7 @@ export default function Lab3() {
       </Highlight>
       <hr />
       <PathParameters />
+      <TodoItem />
       <TodoList />
     </div>
   );
