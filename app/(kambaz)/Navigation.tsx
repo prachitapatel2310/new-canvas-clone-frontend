@@ -1,4 +1,5 @@
 "use client";
+import React, { useState } from "react";
 import { ListGroup, ListGroupItem, Navbar, Nav, Offcanvas, Container } from "react-bootstrap";
 import { AiOutlineDashboard } from "react-icons/ai";
 import { IoCalendarOutline } from "react-icons/io5";
@@ -9,6 +10,7 @@ import Link from "next/link";
 
 export default function KambazNavigation() {
   const pathname = usePathname();
+  const [show, setShow] = useState(false);
   const links = [
     { label: "Dashboard", path: "/Dashboard", icon: AiOutlineDashboard },
     { label: "Courses", path: "/Dashboard", icon: LiaBookSolid }, // intentionally routes to Dashboard
@@ -19,7 +21,6 @@ export default function KambazNavigation() {
 
   return (
     <>
-      
       {/* Desktop sidebar (unchanged styling) */}
       <ListGroup
         id="wd-kambaz-navigation"
@@ -67,46 +68,72 @@ export default function KambazNavigation() {
       </ListGroup>
 
       {/* Mobile hamburger + offcanvas (reuses same links) */}
-      <Navbar bg="black" variant="dark" className="d-md-none">
+      <Navbar bg="white" variant="light" className="d-md-none">
         <Container fluid>
-          <Navbar.Toggle aria-controls="kambaz-offcanvas" className="ms-2" />
-          <Navbar.Brand as={Link} href="/" className="text-white ms-2">
-            <img src="/images/NEU.png" width="40px" className="me-2" />
-            Kambaz
+          {/* custom hamburger button matches your CSS (#wd-hamburger-btn and .wd-hamburger-icon) */}
+          <button
+            id="wd-hamburger-btn"
+            type="button"
+            className="ms-2"
+            aria-controls="kambaz-offcanvas"
+            aria-expanded={show}
+            onClick={() => setShow(true)}
+          >
+            <span className="wd-hamburger-icon" />
+            <span className="wd-hamburger-icon" />
+            <span className="wd-hamburger-icon" />
+          </button>
+
+          {/* mobile brand: 3-line logo (no "Kambaz" text) */}
+          <Navbar.Brand as={Link} href="/" className="text-dark ms-2">
+            <div className="wd-logo-lines" aria-hidden="true">
+              <span className="wd-logo-line" />
+              <span className="wd-logo-line" />
+              <span className="wd-logo-line" />
+            </div>
           </Navbar.Brand>
 
-          <Offcanvas id="kambaz-offcanvas" placement="start" className="bg-black text-white">
-            <Offcanvas.Header closeButton closeVariant="white" className="bg-black text-white">
-              <Offcanvas.Title className="text-white">Kambaz</Offcanvas.Title>
-            </Offcanvas.Header>
-            <Offcanvas.Body className="bg-black">
-              <Nav className="flex-column">
-                <Nav.Item className="mb-2">
-                  <Nav.Link as={Link} href="/Account" className={`text-white ${pathname?.includes("Account") ? "text-danger" : ""}`}>
-                    <FaRegCircleUser className={`me-2 ${pathname?.includes("Account") ? "text-danger" : "text-white"}`} />
-                    Account
-                  </Nav.Link>
-                </Nav.Item>
+          <Offcanvas
+            id="kambaz-offcanvas"
+            placement="start"
+            className="wd-mobile-menu"
+            show={show}
+            onHide={() => setShow(false)}
+          >
+            {/* header with close button only (no Kambaz text) */}
+            <Offcanvas.Header closeButton closeVariant="dark" className="wd-mobile-header" />
 
+            <Offcanvas.Body className="wd-mobile-body">
+              {/* Account first */}
+              <div className="text-center mb-3">
+                <Link href="/Account" onClick={() => setShow(false)} className="wd-mobile-nav-link d-inline-flex flex-column align-items-center">
+                  <FaRegCircleUser className="wd-mobile-nav-icon text-danger" />
+                  <span className="wd-mobile-nav-text">Account</span>
+                </Link>
+              </div>
+
+              {/* Links (centered, large, red) */}
+              <ul className="wd-mobile-nav-list list-unstyled text-center">
                 {links.map((link) => (
-                  <Nav.Item key={`${link.path}-${link.label}`} className="mb-2">
-                    <Nav.Link
-                      as={Link}
+                  <li key={`${link.path}-${link.label}`} className="mb-3">
+                    <Link
                       href={link.path}
-                      className={`text-white ${pathname?.includes(link.label) ? "text-danger" : ""}`}
+                      onClick={() => setShow(false)}
+                      className={`wd-mobile-nav-link d-inline-flex flex-column align-items-center ${pathname?.includes(link.label) ? "active" : ""}`}
                     >
-                      {link.icon({ className: "me-2" })}
-                      {link.label}
-                    </Nav.Link>
-                  </Nav.Item>
+                      {link.icon({ className: "wd-mobile-nav-icon text-danger" })}
+                      <span className="wd-mobile-nav-text">{link.label}</span>
+                    </Link>
+                  </li>
                 ))}
+              </ul>
 
-                <Nav.Item className="mt-3">
-                  <Nav.Link href="https://www.northeastern.edu/" target="_blank" className="text-white">
-                    NEU Website
-                  </Nav.Link>
-                </Nav.Item>
-              </Nav>
+              <div className="text-center mt-4">
+                <a href="https://www.northeastern.edu/" target="_blank" rel="noreferrer" className="wd-mobile-nav-link d-inline-flex flex-column align-items-center">
+                  <span className="wd-mobile-nav-icon text-danger">🔗</span>
+                  <span className="wd-mobile-nav-text">NEU Website</span>
+                </a>
+              </div>
             </Offcanvas.Body>
           </Offcanvas>
         </Container>

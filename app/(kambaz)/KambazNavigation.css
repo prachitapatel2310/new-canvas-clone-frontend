@@ -76,34 +76,32 @@
   text-align: center;
 }
 
-/* Hamburger Menu for Mobile */
+/* Hamburger Menu for Mobile - use app accent color, slightly thicker lines */
 #wd-hamburger-btn {
   display: none;
   position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 1050;
-  background: #fff;
-  border: 1px solid #ddd;
-  padding: 10px 15px;
+  top: 14px;
+  left: 14px;
+  z-index: 1065; /* above some overlays */
+  background: transparent;
+  border: none;
+  padding: 6px;
   cursor: pointer;
-  border-radius: 4px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  width: auto;
-  min-width: 50px;
 }
 
 #wd-hamburger-btn:hover {
-  background-color: #f8f9fa;
+  background-color: rgba(0,0,0,0.04);
 }
 
+/* make the three bars red and a bit thicker/rounded to match the logo */
 .wd-hamburger-icon {
-  width: 30px;
-  height: 3px;
-  background-color: #000;
-  margin: 5px 0;
+  width: 24px;
+  height: 4px;
+  background-color: #dc3545; /* app accent color */
+  margin: 4px 0;
   display: block;
-  transition: 0.4s;
+  border-radius: 3px;
+  transition: 0.2s;
 }
 
 /* Mobile Menu Overlay */
@@ -129,13 +127,14 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #e9ecef;
+  background: #fff;
 }
 
 .wd-mobile-title {
   font-size: 1.5rem;
   font-weight: 500;
-  color: #000;
+  color: #333;
 }
 
 #wd-close-btn {
@@ -153,35 +152,52 @@
 }
 
 .wd-mobile-nav-list {
-  list-style: none;
+  margin: 20px 0;
   padding: 0;
-  margin: 0;
+}
+
+.wd-mobile-nav-list li {
+  list-style: none;
 }
 
 .wd-mobile-nav-link {
-  display: flex;
-  align-items: center;
-  padding: 20px;
   text-decoration: none;
-  color: #dc3545;
-  border-bottom: 1px solid #f0f0f0;
-  transition: background-color 0.2s;
+  color: #dc3545; /* bright red */
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 22px 0; /* slightly taller */
 }
 
-.wd-mobile-nav-link:hover {
-  background-color: #f8f9fa;
-  color: #dc3545;
+.wd-mobile-nav-link:hover,
+.wd-mobile-nav-link.active {
+  background: transparent;
+  color: #c82333;
 }
 
 .wd-mobile-nav-icon {
-  width: 30px;
-  height: 30px;
-  margin-right: 15px;
-  fill: currentColor;
+  font-size: 34px; /* larger icon */
+  line-height: 1;
 }
 
 .wd-mobile-nav-text {
-  font-size: 1.2rem;
+  font-size: 22px; /* larger label */
+  font-weight: 500;
+}
+
+/* NEU link area (top) */
+.wd-mobile-body .mb-3 {
+  padding-top: 12px;
+  padding-bottom: 8px;
+}
+
+/* Close button (Offcanvas default close) */
+.btn-close {
+  filter: none;
+  opacity: 1;
 }
 
 /* Overlay backdrop */
@@ -198,6 +214,33 @@
 
 #wd-overlay.show {
   display: block;
+}
+
+/* small 3-line logo used in mobile brand (no text) - accent color, centered */
+.wd-logo-lines {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 8px;
+  align-items: center;
+  margin: 0;
+}
+.wd-logo-line {
+  width: 28px;
+  height: 4px;               
+  background-color: #dc3545;    /* use accent color */
+  display: block;
+  border-radius: 4px;        
+  box-shadow: none;
+  transform-origin: center;
+}
+
+/* ensure the mobile brand (logo) sits aligned with the hamburger */
+.navbar .wd-logo-lines {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
 }
 
 /* Responsive */
