@@ -60,6 +60,8 @@ export default function Lab3() {
       <FindIndex />
       <FilterFunction />
       <JsonStringify />
+      <TodoItem />
+      <TodoList />
       <House />
       <Spreading />
       <Destructing />
@@ -77,8 +79,7 @@ export default function Lab3() {
       </Highlight>
       <hr />
       <PathParameters />
-      <TodoItem />
-      <TodoList />
+      
     </div>
   );
 }
