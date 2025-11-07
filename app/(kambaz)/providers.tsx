@@ -1,10 +1,14 @@
 "use client";
 
-import ReduxProvider from "@/lib/redux/ReduxProvider";
-import type { ReactNode } from "react";
+import React, { ReactNode } from "react";
+import { Provider } from "react-redux";
+import store from "@/lib/redux/store";
 
+/**
+ * Client-only Providers wrapper.
+ * On the server this file is not executed (because of "use client"),
+ * but the store module itself is server-safe (see lib/redux/store.ts).
+ */
 export default function Providers({ children }: { children: ReactNode }) {
-  // Delegate to the client-only ReduxProvider implemented under /lib so the
-  // Redux store module is never imported in server-rendered contexts.
-  return <ReduxProvider>{children}</ReduxProvider>;
+  return <Provider store={store}>{children}</Provider>;
 }

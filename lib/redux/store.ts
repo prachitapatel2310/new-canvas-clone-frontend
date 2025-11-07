@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
+
 import coursesReducer from "@/app/(kambaz)/Courses/reducer";
-import modulesReducer from "@/app/(kambaz)/Courses/[cid]/Modules/reducer";
 import accountReducer from "@/app/(kambaz)/Account/reducer";
 import assignmentsReducer from "@/app/(kambaz)/Courses/Assignments/reducer";
 import enrollmentsReducer from "@/app/(kambaz)/Courses/Enrollments/reducer";
@@ -12,17 +12,29 @@ export const makeStore = () =>
   configureStore({
     reducer: {
       coursesReducer,
-      modulesReducer,
       accountReducer,
       assignmentsReducer,
       enrollmentsReducer,
     },
   });
 
-// Single client instance for runtime
-const store = makeStore();
+// Create a fresh store on the server, and a persistent store on the client
+const isClient = typeof window !== "undefined";
+
+let store = (() => {
+  if (isClient) {
+    // re-use store across HMR / client navigation
+    const anyGlobal = globalThis as any;
+    if (!anyGlobal.__KAMBAZ_STORE__) {
+      anyGlobal.__KAMBAZ_STORE__ = makeStore();
+    }
+    return anyGlobal.__KAMBAZ_STORE__;
+  } else {
+    // server: create a new store for each render
+    return makeStore();
+  }
+})();
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
-
 export default store;

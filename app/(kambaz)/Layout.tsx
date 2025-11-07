@@ -6,11 +6,6 @@ import "./KambazNavigation.css";
 import "./styles.css";
 import Providers from "./providers";
 
-// export const metadata = {
-//   title: "Kambaz",
-//   description: "Learning Management System",
-// };
-
 export default function KambazLayout({ 
   children 
 }: Readonly<{ children: ReactNode }>) {

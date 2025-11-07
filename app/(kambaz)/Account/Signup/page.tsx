@@ -1,24 +1,11 @@
-// import Link from "next/link";
-// export default function Signup() {
-//   return (
-//     <div id="wd-signup-screen">
-//       <h3>Sign up</h3>
-//       <input placeholder="username" className="wd-username" /><br/>
-//       <input placeholder="password" type="password" className="wd-password" /><br/>
-//       <input placeholder="verify password"
-//              type="password" className="wd-password-verify" /><br/>
-//       <Link  href="Profile" > Sign up </Link><br />
-//       <Link  href="Signin" > Sign in </Link>
-//     </div>
-// );}
-
-
 "use client";
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 
 import Link from "next/link";
+import { Form, Button } from "react-bootstrap";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { FormControl, Button } from "react-bootstrap";
 
 export default function Signup() {
   const [credentials, setCredentials] = useState<any>({ username: "", password: "", passwordVerify: "" });
@@ -49,7 +36,7 @@ export default function Signup() {
       <div id="wd-signup-screen" className="card shadow-sm p-4" style={{ width: 380 }}>
         <h1 className="text-center mb-4"><b>Sign up</b></h1>
 
-        <FormControl
+        <Form.Control
           value={credentials.username}
           onChange={(e) => setCredentials({ ...credentials, username: (e.target as HTMLInputElement).value })}
           className="mb-3"
@@ -57,7 +44,7 @@ export default function Signup() {
           id="wd-username"
         />
 
-        <FormControl
+        <Form.Control
           value={credentials.password}
           onChange={(e) => setCredentials({ ...credentials, password: (e.target as HTMLInputElement).value })}
           className="mb-3"
@@ -66,7 +53,7 @@ export default function Signup() {
           id="wd-password"
         />
 
-        <FormControl
+        <Form.Control
           value={credentials.passwordVerify}
           onChange={(e) => setCredentials({ ...credentials, passwordVerify: (e.target as HTMLInputElement).value })}
           className="mb-3"

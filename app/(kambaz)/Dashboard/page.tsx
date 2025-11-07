@@ -1,7 +1,6 @@
 "use client";
-
-// Prevent Next.js from attempting to prerender this client-heavy page during the static export/build.
 export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 
 import KambazNavigation from "../Navigation";
 import Link from "next/link";
