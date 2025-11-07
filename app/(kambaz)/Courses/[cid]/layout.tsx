@@ -6,7 +6,7 @@ import CourseNavigation from "./Navigation";
 import Breadcrumb from "./Breadcrumb";
 import { useSelector } from "react-redux";
 import { useParams } from "next/navigation";
-import type { RootState } from "../../store";
+import type { RootState } from "@/lib/redux/store";
 import Offcanvas from "react-bootstrap/Offcanvas";
 
 export default function CoursesLayout({ children }: { children: ReactNode }) {
@@ -25,7 +25,7 @@ export default function CoursesLayout({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <div id="wd-courses" style={{ marginLeft: `${baseKambazOffset}px` }}>
+      <div id="wd-courses" style={{ marginLeft: "20px" }}>
         {/* Header: hamburger + breadcrumb */}
         <div className="d-flex align-items-center">
           <FaAlignJustify

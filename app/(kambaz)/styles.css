@@ -48,9 +48,22 @@ body * {
 
 /* Main content offset */
 .wd-main-content-offset {
-  margin-left: 120px;
-  padding: 20px;
+  /* Use padding-left to reserve the fixed sidebar space instead of margin-left.
+    This avoids expanding the page width (which can create a horizontal scrollbar)
+    while keeping the content flush to the right of the sidebar. */
+  margin-left: 0;
+  padding: 20px 8px 20px 96px; /* top right bottom left - match sidebar width */
+  box-sizing: border-box;
   width: 100%;
+  overflow-x: hidden; /* safety-net to avoid sideways scrolling */
+}
+
+/* Prevent horizontal scroll on the whole page as a safety-net. If app
+  components legitimately need horizontal space this will hide it, but
+  in this layout we want to ensure the fixed sidebar never causes a
+  sideways scrollbar. */
+html, body {
+  overflow-x: hidden;
 }
 
 /* Account page content offset: 120px (Kambaz) + 120px (Account) = 240px */

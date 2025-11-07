@@ -13,7 +13,7 @@ import { addNewCourse, deleteCourse, updateCourse } from "../Courses/reducer";
 import { setCurrentUser } from "../Account/reducer";
 import { enrollUser, unenrollUser } from "../Courses/Enrollments/reducer";
 import { useRouter } from "next/navigation";
-import type { RootState } from "../store";
+import type { RootState } from "@/lib/redux/store";
 
 export default function Dashboard() {
   const { courses } = useSelector((state: RootState) => state.coursesReducer);
@@ -38,41 +38,78 @@ export default function Dashboard() {
     setCourse(c);
   };
 
+  // single authorization flag used in the page
+  const role = (currentUser?.role || "").toUpperCase();
+  const canEdit = !!currentUser && ["ADMIN", "FACULTY", "INSTRUCTOR"].includes(role);
+
   return (
     <>
-      <div id="wd-dashboard" className="container-fluid p-4" style={{ marginLeft: "100px" }}>
+      <div id="wd-dashboard" className="container-fluid p-4">
         <h1 id="wd-dashboard-title">Dashboard</h1>
         {currentUser && (
           <div className="mb-2 d-flex align-items-center gap-2">
             <small className="text-muted">Signed in as <strong>{currentUser.firstName} {currentUser.lastName}</strong></small>
             <button className="btn btn-outline-secondary btn-sm" onClick={() => { dispatch(setCurrentUser(null)); router.push('/Account/Signin'); }} id="wd-signout-btn">Sign out</button>
-            {/* Enrollments toggle placed next to signout so it's visible on top-right */}
             <Button id="wd-enrollments-toggle" variant="primary" size="sm" className="ms-2" onClick={() => setShowAll((s) => !s)}>
               Enrollments {showAll ? "(All)" : "(Mine)"}
             </Button>
           </div>
         )}
         <hr />
+
         <div className="d-flex justify-content-end mb-2">
           <Button id="wd-enrollments-toggle" variant="primary" onClick={() => setShowAll((s) => !s)}>
             Enrollments {showAll ? "(All)" : "(Mine)"}
           </Button>
         </div>
 
-        <h5>
-          New Course
-          <button className="btn btn-primary float-end"
-                  id="wd-add-new-course-click"
-                  onClick={() => dispatch(addNewCourse(course))} > Add </button>
-          <button className="btn btn-warning float-end me-2"
-                  id="wd-update-course-click"
-                  onClick={() => dispatch(updateCourse(course))} > Update </button>
-        </h5>
-        <br />
-        <FormControl value={course.name} className="mb-2"
-          onChange={(e) => setCourse({ ...course, name: e.target.value })} />
-        <FormControl as="textarea" value={course.description} rows={3}
-          onChange={(e) => setCourse({ ...course, description: e.target.value })} />
+        {/* Add / Update controls visible only to authorized roles */}
+        {canEdit && (
+          <>
+            <h5>
+              New Course
+              <button
+                className="btn btn-primary float-end"
+                id="wd-add-new-course-click"
+                onClick={() => {
+                  // Build a proper new course payload so Instructors (and others) get a unique course record
+                  const newCourse = {
+                    ...course,
+                    _id: course._id && course._id !== "0" ? course._id : `C${Date.now()}`,
+                    createdBy: currentUser?._id ?? "system",
+                  };
+                  dispatch(addNewCourse(newCourse));
+                  // Enroll the creator (instructor) into the newly created course by default
+                  if (currentUser && currentUser._id) {
+                    // include a generated enrollment _id so reducer can accept it reliably
+                    const enrollment = { _id: `E${Date.now()}`, user: currentUser._id, course: newCourse._id };
+                    dispatch(enrollUser(enrollment));
+                  }
+                  // reset local form to a fresh template
+                  setCourse({
+                    _id: "0",
+                    name: "New Course",
+                    number: "New Number",
+                    startDate: "2023-09-10",
+                    endDate: "2023-12-15",
+                    image: "/images/reactjs.jpg",
+                    description: "New Description",
+                  });
+                }}
+              >
+                Add
+              </button>
+              <button className="btn btn-warning float-end me-2"
+                      id="wd-update-course-click"
+                      onClick={() => dispatch(updateCourse(course))} > Update </button>
+            </h5>
+            <br />
+            <FormControl value={course.name} className="mb-2"
+              onChange={(e) => setCourse({ ...course, name: e.target.value })} />
+            <FormControl as="textarea" value={course.description} rows={3}
+              onChange={(e) => setCourse({ ...course, description: e.target.value })} />
+          </>
+        )}
         <hr />
 
         {/* Show count of displayed courses based on current user */}
@@ -103,7 +140,6 @@ export default function Dashboard() {
                   enrollments.some((enrollment: any) => enrollment.user === currentUser._id && enrollment.course === course._id)
                 );
               }
-              const canEdit = (currentUser && ["ADMIN", "FACULTY", "INSTRUCTOR"].includes((currentUser.role || "").toUpperCase()));
               return displayed.map((c: any) => (
               <Col key={c._id} className="wd-dashboard-course" style={{ width: "300px" }}>
                 <Card className="h-100">

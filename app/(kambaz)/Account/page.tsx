@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
-import type { RootState } from "../store";
+import type { RootState } from "@/lib/redux/store";
 
 export default function AccountPage() {
 	const router = useRouter();

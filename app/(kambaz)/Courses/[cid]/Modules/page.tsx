@@ -6,7 +6,7 @@ import { BsGripVertical } from "react-icons/bs";
 import ModulesControls from "./ModulesControls";
 import ModuleControlButtons from "./ModuleControlButtons";
 import { useSelector, useDispatch } from "react-redux";
-import type { RootState } from "../../../store";
+import type { RootState } from "@/lib/redux/store";
 import { addModule, deleteModule, updateModule, editModule } from "./reducer";
 
 export default function ModulesPage() {

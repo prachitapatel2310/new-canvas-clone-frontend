@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setCurrentUser } from "../reducer";
-import type { RootState } from "../../store";
+import type { RootState } from "@/lib/redux/store";
 import { Button, FormControl } from "react-bootstrap";
 import { useRouter } from "next/navigation";
 

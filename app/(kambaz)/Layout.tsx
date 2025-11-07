@@ -18,7 +18,7 @@ export default function KambazLayout({
     <Providers>
       <KambazNavigation />
       <div id="wd-kambaz">
-        <div>
+        <div className="wd-main-content-offset">
           {children}
         </div>
       </div>

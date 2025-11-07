@@ -13,7 +13,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSelector } from "react-redux";
-import type { RootState } from "../store";
+import type { RootState } from "@/lib/redux/store";
 
 interface AccountNavigationProps {
   activePage?: string;
@@ -35,17 +35,17 @@ export default function AccountNavigation({ activePage }: AccountNavigationProps
     <div id="wd-account-navigation" className="wd list-group fs-5 rounded-0">
       {links.includes("Signin") && (
         <Link href="/Account/Signin" id="wd-account-signin-link" className={getItemClass("Signin")}>
-          Signin
+          <h4>Signin</h4>
         </Link>
       )}
       {links.includes("Signup") && (
         <Link href="/Account/Signup" id="wd-account-signup-link" className={getItemClass("Signup")}>
-          Signup
+          <h4>Signup</h4>
         </Link>
       )}
       {links.includes("Profile") && (
         <Link href="/Account/Profile" id="wd-account-profile-link" className={getItemClass("Profile")}>
-          Profile
+          <h4>Profile</h4>
         </Link>
       )}
     </div>

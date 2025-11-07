@@ -41,9 +41,8 @@ export default function AccountLayout({ children }: Readonly<{ children: ReactNo
 
   return (
     <div className="d-flex">
-        <KambazNavigation />
       
-      <div style={{ marginLeft: '130px' }}>
+      <div style={{ marginLeft: '10px' }}>
         <AccountNavigation activePage={getActivePage()} />
       </div>
       

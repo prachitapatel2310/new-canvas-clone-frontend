@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import * as db from "../../../Database";
 import { ListGroup, ListGroupItem, Button, Row, Col, Form } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
-import type { RootState } from "../../../store";
+import type { RootState } from "@/lib/redux/store";
 import { deleteAssignment } from "../../Assignments/reducer";
 
   // get current user to enforce role-based UI

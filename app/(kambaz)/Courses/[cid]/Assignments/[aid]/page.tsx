@@ -4,7 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Card, Button, Row, Col, Form } from "react-bootstrap";
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import type { RootState, AppDispatch } from "../../../../store";
+import type { RootState, AppDispatch } from "@/lib/redux/store";
 import { addAssignment, updateAssignment } from "../../../Assignments/reducer";
 
 export default function AssignmentEditor() {
