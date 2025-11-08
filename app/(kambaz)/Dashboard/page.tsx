@@ -12,7 +12,7 @@ import { addNewCourse, deleteCourse, updateCourse } from "../Courses/reducer";
 import { setCurrentUser } from "../Account/reducer";
 import { enrollUser, unenrollUser } from "../Courses/Enrollments/reducer";
 import { useRouter } from "next/navigation";
-import type { RootState } from "@/lib/redux/types";
+import type { RootState } from "../store";
 
 export default function Dashboard() {
   const { courses } = useSelector((state: RootState) => state.coursesReducer);

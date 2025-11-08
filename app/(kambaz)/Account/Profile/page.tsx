@@ -5,7 +5,7 @@ export const fetchCache = "force-no-store";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { setCurrentUser } from "../reducer";
-import type { RootState } from "@/lib/redux/types";
+import type { RootState } from "../store";
 import { Button, FormControl } from "react-bootstrap";
 import { useRouter } from "next/navigation";
 

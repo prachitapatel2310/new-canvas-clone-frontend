@@ -8,7 +8,7 @@ import { Card, Button, Row, Col, Form } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 // replace store import with types-only import
-import type { RootState, AppDispatch } from "@/lib/redux/types";
+import type { RootState, AppDispatch } from "../../../../store";
 import { addAssignment, updateAssignment } from "../../../Assignments/reducer";
 
 export default function AssignmentEditor() {
