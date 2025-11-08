@@ -1,43 +1,21 @@
-// import Link from "next/link";
-// import KambazNavigation from "../Navigation";
-// export default function Inbox() {
-//  return (
-//    <div id="wd-inbox">
-//     <div>
-//             <table>
-//               <tbody>
-//                 <tr>
-//                   <td valign="top" width="180">
-//                     <KambazNavigation />
-//                   </td>
-//                   <td valign="top" width="100%">
-//                     <h1 id="wd-inbox-title">Inbox</h1> <hr />
-    
-//                   </td>
-//                 </tr>
-//               </tbody>
-//             </table>
-//           </div>
-//     </div>
-// );}
-
 import { ReactNode } from "react";
-import KambazNavigation from "../Navigation";
 import "../styles.css";
 
-export default function Calendar({ children }: Readonly<{ children: ReactNode }>) {
+// DO NOT import KambazNavigation here
+
+export default function Inbox({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <div id="wd-kambaz-inbox">
-      <div className="d-flex">
-        <div className="d-none d-md-block">
-        </div>
-        <div className="wd-main-content-offset">
-          <br />
-          <h2>Inbox</h2>
-        </div>
+      {/* The KambazNavigation is already rendered by the layout.tsx */}
+      <div className="wd-main-content-offset" style={{ marginLeft: 0 }}>
+        <br />
+        <h2>Inbox</h2>
         <hr />
+        <div className="alert alert-info" role="alert">
+          <h3>Inbox Integration Coming Soon!</h3>
+          <p className="mb-0">This feature will be available in a future update.</p>
+        </div>
       </div>
-      <hr />  
     </div>
   );
 }

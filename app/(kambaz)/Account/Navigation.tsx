@@ -13,7 +13,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSelector } from "react-redux";
-import type { RootState } from "@/lib/redux/store";
+import type { RootState } from "../store";
 
 interface AccountNavigationProps {
   activePage?: string;
