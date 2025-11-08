@@ -1,5 +1,4 @@
 "use client";
-export const dynamic = "force-dynamic";
 
 import { Nav, NavItem, NavLink } from "react-bootstrap";
 import Link from "next/link";

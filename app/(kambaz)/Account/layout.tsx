@@ -1,28 +1,8 @@
-'use client';
+export const dynamic = "force-dynamic";
 
-import { ReactNode } from "react";
-import { usePathname } from "next/navigation";
-import KambazNavigation from "../Navigation";
-import AccountNavigation from "./Navigation";
+import type { ReactNode } from "react";
+import AccountLayoutClient from "./AccountLayoutClient";
 
-export default function AccountLayout({ children }: Readonly<{ children: ReactNode }>) {
-  const pathname = usePathname();
-  
-  const getActivePage = () => {
-    if (pathname.includes("/Signin")) return "Signin";
-    if (pathname.includes("/Signup")) return "Signup";
-    if (pathname.includes("/Profile")) return "Profile";
-    return "Signin";
-  };
-
-  return (
-    <div className="d-flex">
-      <div style={{ marginLeft: '10px' }}>
-        <AccountNavigation activePage={getActivePage()} />
-      </div>
-      <div className="flex-fill p-4" style={{ marginLeft: '250px' }}>
-        {children}
-      </div>
-    </div>
-  );
+export default function AccountLayout({ children }: { children: ReactNode }) {
+  return <AccountLayoutClient>{children}</AccountLayoutClient>;
 }

@@ -1,5 +1,4 @@
 "use client";
-export const dynamic = "force-dynamic";
 import "./index.css";
 import Foreground from "./ForegroundColors";
 import Background from "./BackgroundColors";
