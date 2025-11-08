@@ -1,10 +1,14 @@
 "use client";
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { Card, Button, Row, Col, Form } from "react-bootstrap";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import type { RootState, AppDispatch } from "../../../../store";
+// replace store import with types-only import
+import type { RootState, AppDispatch } from "@/lib/redux/types";
 import { addAssignment, updateAssignment } from "../../../Assignments/reducer";
 
 export default function AssignmentEditor() {

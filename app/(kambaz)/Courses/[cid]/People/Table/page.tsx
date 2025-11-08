@@ -3,11 +3,41 @@
 import { Table } from "react-bootstrap";
 import { FaUserCircle } from "react-icons/fa";
 import { useParams } from "next/navigation";
-import * as db from "../../../../Database";
+import { useEffect, useState } from "react";
 
 export default function PeopleTable() {
   const { cid } = useParams() as { cid?: string };
-  const { users = [], enrollments = [] } = db as any;
+
+  // load DB data on the client so server/bundler won't import Database at build time
+  const [users, setUsers] = useState<any[]>([]);
+  const [enrollments, setEnrollments] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    setLoading(true);
+    import("../../../../Database")
+      .then((mod) => {
+        if (!mounted) return;
+        const db: any = mod || {};
+        setUsers(db.users ?? []);
+        setEnrollments(db.enrollments ?? []);
+      })
+      .catch(() => {
+        if (!mounted) return;
+        setUsers([]);
+        setEnrollments([]);
+      })
+      .finally(() => {
+        if (mounted) setLoading(false);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  if (!cid) return <div>No course id provided.</div>;
+  if (loading) return <div>Loading people...</div>;
 
   return (
     <div id="wd-people-table">

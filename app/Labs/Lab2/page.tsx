@@ -1,3 +1,5 @@
+"use client";
+export const dynamic = "force-dynamic";
 import "./index.css";
 import Foreground from "./ForegroundColors";
 import Background from "./BackgroundColors";
@@ -27,7 +29,8 @@ export default function Lab2() {
       <p id="wd-css-style-attribute">
         Style attribute allows configuring look and feel right on the element.
         Although it&apos;s very convenient it is considered bad practice and you
-        should avoid using the style attribute</p>
+        should avoid using the style attribute
+      </p>
       <div id="wd-css-id-selectors">
         <h3>ID selectors</h3>
         <p id="wd-id-selector-1">
