@@ -2,11 +2,11 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { addTodo, updateTodo, setTodo } from "./todosReducer";
-import type { RootState } from "../../store";
+import type { Lab4RootState } from "../../store";
 import { ListGroupItem, Button, FormControl } from "react-bootstrap";
 
 export default function TodoForm() {
-  const { todo } = useSelector((state: RootState) => state.todosReducer ?? { todo: { id: "-1", title: "" } });
+  const { todo } = useSelector((state: Lab4RootState) => state.todosReducer ?? { todo: { id: "-1", title: "" } });
   const dispatch = useDispatch();
   return (
     <ListGroupItem className="d-flex align-items-center">

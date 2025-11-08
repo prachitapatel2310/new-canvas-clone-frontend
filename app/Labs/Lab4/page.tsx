@@ -14,7 +14,7 @@ import ArrayStateVariable from "./ArrayStateVariable";
 import ParentStateComponent from "./ParentStateComponent";
 import ReduxExamples from "./ReduxExamples/page";
 // Import the factory and store type
-import { makeLab4Store, AppLab4Store } from "./store";
+import { makeLab4Store, AppLab4Store, Lab4RootState } from "./store";
 
 export default function Lab4() {
   const storeRef = useRef<AppLab4Store | null>(null);

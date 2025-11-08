@@ -5,8 +5,8 @@ import addReducer from "./ReduxExamples/AddRedux/addReducer";
 import todosReducer from "./ReduxExamples/todos/todosReducer";
 
 // Factory to create a fresh store instance for Lab 4
-export const makeLab4Store = () => {
-  return configureStore({
+export const makeLab4Store = () =>
+  configureStore({
     reducer: {
       helloReducer,
       counterReducer,
@@ -14,10 +14,9 @@ export const makeLab4Store = () => {
       todosReducer,
     },
   });
-};
 
-// Infer the type of makeStore
+// Infer the type of the Lab4 store factory
 export type AppLab4Store = ReturnType<typeof makeLab4Store>;
-// Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = ReturnType<AppLab4Store['getState']>;
-export type AppDispatch = AppLab4Store['dispatch'];
+// Infer the Lab4-specific RootState and AppDispatch types (renamed to avoid conflicts)
+export type Lab4RootState = ReturnType<AppLab4Store["getState"]>;
+export type Lab4AppDispatch = AppLab4Store["dispatch"];

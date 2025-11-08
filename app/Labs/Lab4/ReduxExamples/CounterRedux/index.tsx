@@ -1,10 +1,10 @@
 "use client";
 import { useSelector, useDispatch } from "react-redux";
 import { increment, decrement } from "./counterReducer";
-import type { RootState } from "../../store";
+import type { Lab4RootState } from "../../store";
 export default function CounterRedux() {
     // component must be a client component to use hooks (useSelector/useDispatch)
-    const count = useSelector((state: RootState) => state.counterReducer?.count ?? 0);
+    const count = useSelector((state: Lab4RootState) => state.counterReducer?.count ?? 0);
     const dispatch = useDispatch();
 
     // debug: log render and count changes

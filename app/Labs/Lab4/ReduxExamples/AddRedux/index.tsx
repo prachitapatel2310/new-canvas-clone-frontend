@@ -2,12 +2,12 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useState } from "react";
 import { add } from "./addReducer";
-import type { RootState } from "../../store";
+import type { Lab4RootState } from "../../store";
 import { Button, FormControl } from "react-bootstrap";
 export default function AddRedux() {
   const [a, setA] = useState(12);
   const [b, setB] = useState(13);
-  const sum = useSelector((state: RootState) => state.addReducer?.sum ?? 0);
+  const sum = useSelector((state: Lab4RootState) => state.addReducer?.sum ?? 0);
   const dispatch = useDispatch();
   return (
     <div className="w-25" id="wd-add-redux">
