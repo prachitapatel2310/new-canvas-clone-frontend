@@ -28,7 +28,7 @@ export default function SigninClient() {
   };
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
+    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", marginLeft: "-380px", marginTop: "-70px" }}>
       <div id="wd-signin-screen" className="card shadow-sm p-4" style={{ width: 380 }}>
         <h1 className="text-center mb-4"><b>Sign in</b></h1>
 
@@ -59,10 +59,20 @@ export default function SigninClient() {
           Sign up
         </Link>
 
-        <p className="mt-3 small text-muted">
-          username: tony123 / password: pass123 (student)
+        <p>
+          username: tony123
           <br />
-          username: alice890 / password: pass890 (professor)
+          password: pass123
+          <br />
+          role: student
+        </p>
+
+        <p>
+          username: alice890
+          <br />
+          password: pass890
+          <br />
+          role: professor
         </p>
       </div>
     </div>

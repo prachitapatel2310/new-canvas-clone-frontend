@@ -2,88 +2,85 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
-import { setCurrentUser } from "../reducer";
 import { useState } from "react";
-import * as db from "../../Database";
-import { Form, Button } from "react-bootstrap";
+import { FormControl, Button } from "react-bootstrap";
 
 export default function SignupClient() {
-  const [model, setModel] = useState<any>({
+  const [credentials, setCredentials] = useState<any>({
     username: "",
     password: "",
-    firstName: "",
-    lastName: "",
-    email: "",
+    passwordVerify: "",
   });
   const [error, setError] = useState<string | null>(null);
-  const dispatch = useDispatch();
   const router = useRouter();
 
   const signup = () => {
     setError(null);
-    if (!model.username || !model.password) {
-      setError("Username and password are required");
+    if (!credentials.username) {
+      setError("Username is required");
       return;
     }
-    const exists = (db as any).users.some((u: any) => u.username === model.username);
-    if (exists) {
-      setError("Username already exists");
+    if (!credentials.password) {
+      setError("Password is required");
       return;
     }
-    const user = { _id: `U${Date.now()}`, ...model, role: "USER" };
-    (db as any).users.push(user);
-    dispatch(setCurrentUser(user));
-    router.push("/Dashboard");
+    if (credentials.password !== credentials.passwordVerify) {
+      setError("Passwords do not match");
+      return;
+    }
+    // For now, just navigate to the profile page.
+    router.push("/Account/Profile");
   };
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
-      <div className="card p-4" style={{ width: 420 }}>
-        <h2 className="mb-3">Sign up</h2>
-        {error && <div className="alert alert-danger">{error}</div>}
-        <Form.Group className="mb-2">
-          <Form.Control
-            placeholder="username"
-            value={model.username}
-            onChange={(e) => setModel({ ...model, username: (e.target as HTMLInputElement).value })}
-          />
-        </Form.Group>
-        <Form.Group className="mb-2">
-          <Form.Control
-            type="password"
-            placeholder="password"
-            value={model.password}
-            onChange={(e) => setModel({ ...model, password: (e.target as HTMLInputElement).value })}
-          />
-        </Form.Group>
-        <Form.Group className="mb-2">
-          <Form.Control
-            placeholder="First name"
-            value={model.firstName}
-            onChange={(e) => setModel({ ...model, firstName: (e.target as HTMLInputElement).value })}
-          />
-        </Form.Group>
-        <Form.Group className="mb-2">
-          <Form.Control
-            placeholder="Last name"
-            value={model.lastName}
-            onChange={(e) => setModel({ ...model, lastName: (e.target as HTMLInputElement).value })}
-          />
-        </Form.Group>
-        <Form.Group className="mb-3">
-          <Form.Control
-            placeholder="email"
-            value={model.email}
-            onChange={(e) => setModel({ ...model, email: (e.target as HTMLInputElement).value })}
-          />
-        </Form.Group>
-        <Button onClick={signup} className="w-100">
-          Create account
+    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", marginLeft: "-380px", marginTop: "-70px" }}>
+      <div id="wd-signup-screen" className="card shadow-sm p-4" style={{ width: 380 }}>
+        <h1 className="text-center mb-4">
+          <b>Sign up</b>
+        </h1>
+
+        <FormControl
+          value={credentials.username}
+          onChange={(e) => setCredentials({ ...credentials, username: (e.target as HTMLInputElement).value })}
+          className="mb-3"
+          placeholder="username"
+          id="wd-username"
+        />
+
+        <FormControl
+          value={credentials.password}
+          onChange={(e) => setCredentials({ ...credentials, password: (e.target as HTMLInputElement).value })}
+          className="mb-3"
+          placeholder="password"
+          type="password"
+          id="wd-password"
+        />
+
+        <FormControl
+          value={credentials.passwordVerify}
+          onChange={(e) => setCredentials({ ...credentials, passwordVerify: (e.target as HTMLInputElement).value })}
+          className="mb-3"
+          placeholder="verify password"
+          type="password"
+          id="wd-password-verify"
+        />
+
+        {error && <div className="alert alert-danger" role="alert">{error}</div>}
+
+        <Button onClick={signup} id="wd-signup-btn" className="w-100 mb-2">
+          Sign up
         </Button>
-        <Link href="/Account/Signin" className="btn btn-link w-100 mt-2">
-          Already have an account?
+
+        <Link href="/Account/Signin" id="wd-signin-link" className="btn btn-outline-primary w-100">
+          Sign in
         </Link>
+
+        {/* Keep the "Already have an account?" part as requested */}
+        <div className="text-center mt-2">
+          <Link href="/Account/Signin" className="small">
+            Already have an account?
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -17,7 +17,7 @@ export default function AccountLayoutClient({ children }: Readonly<{ children: R
 
   return (
     <div className="d-flex">
-      <KambazNavigation />
+      {/* <KambazNavigation /> */}
       <div style={{ marginLeft: "10px" }}>
         <AccountNavigation activePage={getActivePage()} />
       </div>
