@@ -18,7 +18,7 @@ export default function Providers({ children }: { children: ReactNode }) {
   useEffect(() => {
     let mounted = true;
     // dynamically import the store from the local (kambaz) store file
-    import("../store")
+    import("./store")
       .then((mod) => {
         const m: any = mod;
         // support default export or named exports
