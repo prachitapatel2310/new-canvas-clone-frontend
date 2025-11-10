@@ -28,7 +28,7 @@ export default function SigninClient() {
   };
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", width: "100%", marginTop: "-100px"   }}>
+    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", width: "100%" }}>
       <div id="wd-signin-screen" className="card shadow-sm p-4" style={{ width: 380 }}>
         <h1 className="text-center mb-4"><b>Sign in</b></h1>
 
