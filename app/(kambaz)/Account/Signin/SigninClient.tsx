@@ -6,7 +6,7 @@ import { setCurrentUser } from "../reducer";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
 import * as db from "../../Database";
-import { FormControl, Button } from "react-bootstrap";
+import { Form, Button } from "react-bootstrap";
 
 export default function SigninClient() {
   const [credentials, setCredentials] = useState<any>({ username: "", password: "" });
@@ -28,11 +28,11 @@ export default function SigninClient() {
   };
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", width: "100%" }}>
+    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", width: "100%", marginTop: "-100px"   }}>
       <div id="wd-signin-screen" className="card shadow-sm p-4" style={{ width: 380 }}>
         <h1 className="text-center mb-4"><b>Sign in</b></h1>
 
-        <FormControl
+        <Form.Control
           value={credentials.username}
           onChange={(e) => setCredentials({ ...credentials, username: (e.target as HTMLInputElement).value })}
           className="mb-3"
@@ -40,7 +40,7 @@ export default function SigninClient() {
           id="wd-username"
         />
 
-        <FormControl
+        <Form.Control
           value={credentials.password}
           onChange={(e) => setCredentials({ ...credentials, password: (e.target as HTMLInputElement).value })}
           className="mb-3"

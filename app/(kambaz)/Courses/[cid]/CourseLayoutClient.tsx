@@ -28,7 +28,7 @@ export default function CoursesLayout({ children }: { children: ReactNode }) {
   return (
     <>
       <KambazNavigation />
-      <div id="wd-courses" style={{ marginLeft: `${baseKambazOffset}px` }}>
+      <div id="wd-courses" style={{ marginLeft: "25px" }}>
         {/* Header: hamburger + breadcrumb */}
         <div className="d-flex align-items-center">
           <FaAlignJustify
