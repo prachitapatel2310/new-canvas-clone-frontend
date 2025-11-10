@@ -40,7 +40,7 @@ export default function DashboardClient() {
   return (
     <>
     <KambazNavigation />
-      <div id="wd-dashboard" className="container-fluid p-4" style={{ marginLeft: "0px" }}>
+      <div id="wd-dashboard" className="container-fluid p-4" style={{ marginLeft: "120px" }}>
         
         <h1 id="wd-dashboard-title">Dashboard</h1>
 
