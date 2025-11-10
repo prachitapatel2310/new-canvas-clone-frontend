@@ -32,7 +32,7 @@ export default function ProfileClient() {
   }, []);
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", marginLeft: "-380px", marginTop: "-40px" }}>
+    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", marginLeft: "100px", marginTop: "-40px" }}>
       <div id="wd-profile-screen" className="card shadow-sm p-4" style={{ width: 380 }}>
         <h1 className="text-center mb-4"><b>Profile</b></h1>
 

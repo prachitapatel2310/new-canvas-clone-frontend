@@ -8,6 +8,7 @@ import { enrollUser, unenrollUser } from "../Courses/Enrollments/reducer";
 import { setCurrentUser } from "../Account/reducer";
 import { useRouter } from "next/navigation";
 import type { RootState } from "../store";
+import KambazNavigation from "../Navigation";
 
 export default function DashboardClient() {
   const { courses } = useSelector((state: RootState) => state.coursesReducer);
@@ -39,6 +40,7 @@ export default function DashboardClient() {
   return (
     <>
       <div id="wd-dashboard" className="container-fluid p-4">
+        <KambazNavigation />
         <h1 id="wd-dashboard-title">Dashboard</h1>
 
         {currentUser && (

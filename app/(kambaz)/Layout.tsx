@@ -11,7 +11,6 @@ export default function KambazLayout({
 }: Readonly<{ children: ReactNode }>) {
   return (
     <>
-      <KambazNavigation />
       <div id="wd-kambaz">
         <div className="wd-main-content-offset">
           {children}
