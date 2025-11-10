@@ -33,7 +33,7 @@ export default function SignupClient() {
   };
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", marginLeft: "100px", marginTop: "-70px" }}>
+    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", marginLeft: "100px", marginTop: "-100px" }}>
       <div id="wd-signup-screen" className="card shadow-sm p-4" style={{ width: 380 }}>
         <h1 className="text-center mb-4">
           <b>Sign up</b>

@@ -39,7 +39,7 @@ export default function DashboardClient() {
 
   return (
     <>
-      <div id="wd-dashboard" className="container-fluid p-4">
+      <div id="wd-dashboard" className="container-fluid p-4" style={{ paddingLeft: "120px" }}>
         <KambazNavigation />
         <h1 id="wd-dashboard-title">Dashboard</h1>
 
@@ -142,56 +142,56 @@ export default function DashboardClient() {
         <div id="wd-dashboard-courses" className="mb-5">
           <Row xs={1} md={2} lg={3} xl={4} xxl={5} className="g-4">
             {(() => {
-              if (!currentUser) return null;
-              const r = (currentUser.role || "").toUpperCase();
-              let displayed: any[] = [];
-              if (r === "ADMIN" || r === "USER" || showAll) {
-                displayed = courses ?? [];
-              } else {
-                displayed = (courses ?? []).filter((course: any) =>
-                  enrollments.some((enrollment: any) => enrollment.user === currentUser._id && enrollment.course === course._id)
-                );
-              }
-              return displayed.map((c: any) => (
-                <Col key={c._id} className="wd-dashboard-course" style={{ width: "300px" }}>
-                  <Card className="h-100">
-                    <Card.Img src={c.image ?? "/images/reactjs.jpg"} variant="top" width="100%" height={160} />
-                    <Card.Body className="card-body">
-                      <Card.Title className="wd-dashboard-course-title text-nowrap overflow-hidden">{c.name}</Card.Title>
-                      <Card.Text className="wd-dashboard-course-description overflow-hidden" style={{ height: "100px" }}>{c.description}</Card.Text>
-                      <Button variant="primary" onClick={(e) => {
-                        e.preventDefault();
-                        const enrolled = enrollments.some((en: any) => en.user === currentUser._id && en.course === c._id);
-                        if (enrolled) {
-                          router.push(`/Courses/${c._id}/Home`);
-                        } else {
-                          alert("You are not enrolled in this course.");
-                        }
-                      }}> Go </Button>
-                    </Card.Body>
-                    <Card.Footer className="d-flex justify-content-end gap-2">
-                      {currentUser && (() => {
-                        const enrolled = enrollments.some((en: any) => en.user === currentUser._id && en.course === c._id);
-                        if (enrolled) {
-                          return <Button variant="outline-danger" size="sm" onClick={(ev) => { ev.preventDefault(); dispatch(unenrollUser({ user: currentUser._id, course: c._id })); }} id={`wd-unenroll-${c._id}`}>Unenroll</Button>;
-                        }
-                        return <Button variant="success" size="sm" onClick={(ev) => { ev.preventDefault(); dispatch(enrollUser({ user: currentUser._id, course: c._id })); }} id={`wd-enroll-${c._id}`}>Enroll</Button>;
-                      })()}
+               if (!currentUser) return null;
+               const r = (currentUser.role || "").toUpperCase();
+               let displayed: any[] = [];
+               if (r === "ADMIN" || r === "USER" || showAll) {
+                 displayed = courses ?? [];
+               } else {
+                 displayed = (courses ?? []).filter((course: any) =>
+                   enrollments.some((enrollment: any) => enrollment.user === currentUser._id && enrollment.course === course._id)
+                 );
+               }
+               return displayed.map((c: any) => (
+                <Col key={c._id} className="wd-dashboard-course">
+                   <Card className="h-100">
+                     <Card.Img src={c.image ?? "/images/reactjs.jpg"} variant="top" width="100%" height={160} />
+                     <Card.Body className="card-body">
+                       <Card.Title className="wd-dashboard-course-title text-nowrap overflow-hidden">{c.name}</Card.Title>
+                       <Card.Text className="wd-dashboard-course-description overflow-hidden" style={{ height: "100px" }}>{c.description}</Card.Text>
+                       <Button variant="primary" onClick={(e) => {
+                         e.preventDefault();
+                         const enrolled = enrollments.some((en: any) => en.user === currentUser._id && en.course === c._id);
+                         if (enrolled) {
+                           router.push(`/Courses/${c._id}/Home`);
+                         } else {
+                           alert("You are not enrolled in this course.");
+                         }
+                       }}> Go </Button>
+                     </Card.Body>
+                     <Card.Footer className="d-flex justify-content-end gap-2">
+                       {currentUser && (() => {
+                         const enrolled = enrollments.some((en: any) => en.user === currentUser._id && en.course === c._id);
+                         if (enrolled) {
+                           return <Button variant="outline-danger" size="sm" onClick={(ev) => { ev.preventDefault(); dispatch(unenrollUser({ user: currentUser._id, course: c._id })); }} id={`wd-unenroll-${c._id}`}>Unenroll</Button>;
+                         }
+                         return <Button variant="success" size="sm" onClick={(ev) => { ev.preventDefault(); dispatch(enrollUser({ user: currentUser._id, course: c._id })); }} id={`wd-enroll-${c._id}`}>Enroll</Button>;
+                       })()}
 
-                      {canEdit && (
-                        <>
-                          <Button variant="warning" className="me-2" onClick={(e) => editCourse(e, c)} id="wd-edit-course-click">Edit</Button>
-                          <Button variant="danger" onClick={(event) => { event.preventDefault(); dispatch(deleteCourse(c._id)); }} id="wd-delete-course-click">Delete</Button>
-                        </>
-                      )}
-                    </Card.Footer>
-                  </Card>
-                </Col>
-              ));
-            })()}
-          </Row>
-        </div>
-      </div>
-    </>
-  );
+                       {canEdit && (
+                         <>
+                           <Button variant="warning" className="me-2" onClick={(e) => editCourse(e, c)} id="wd-edit-course-click">Edit</Button>
+                           <Button variant="danger" onClick={(event) => { event.preventDefault(); dispatch(deleteCourse(c._id)); }} id="wd-delete-course-click">Delete</Button>
+                         </>
+                       )}
+                     </Card.Footer>
+                   </Card>
+                 </Col>
+               ));
+             })()}
+           </Row>
+         </div>
+       </div>
+     </>
+   );
 }

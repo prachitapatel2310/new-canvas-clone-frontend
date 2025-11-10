@@ -1,12 +1,12 @@
 import { ReactNode } from "react";
 import "../styles.css";
+import KambazNavigation from "../Navigation";
 
-// DO NOT import KambazNavigation here
 
 export default function Calendar({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <div id="wd-kambaz-calendar">
-      {/* The KambazNavigation is already rendered by the layout.tsx */}
+      <KambazNavigation />
       <div className="wd-main-content-offset" style={{ marginLeft: 0 }}>
         <br />
         <h2>Calendar</h2>
