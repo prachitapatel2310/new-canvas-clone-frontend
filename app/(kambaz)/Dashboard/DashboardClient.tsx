@@ -43,13 +43,14 @@ export default function DashboardClient() {
       <div
         id="wd-dashboard"
         className="container-fluid p-4"
+        // shift content to the right of the sidebar without increasing total width
         style={{
-          paddingLeft: "120px",      // same offset as Courses page
-          paddingRight: "16px",      // small right padding
-          width: "100%",             // fill viewport
-          maxWidth: "100vw",         // prevent horizontal overflow
+          marginLeft: "96px",
+          paddingLeft: "120px",   // adjust to match your sidebar width
+          width: "85%",
+          maxWidth: "100vw",
           boxSizing: "border-box",
-          overflowX: "hidden"
+          overflowX: "hidden",
         }}
       >
         <h1 id="wd-dashboard-title">Dashboard</h1>
