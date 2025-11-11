@@ -43,7 +43,14 @@ export default function DashboardClient() {
       <div
         id="wd-dashboard"
         className="container-fluid p-4"
-        style={{marginLeft: "96px", paddingLeft: "120px", width: "80%", boxSizing: "border-box", overflowX: "hidden" }}
+        style={{
+          paddingLeft: "120px",      // same offset as Courses page
+          paddingRight: "16px",      // small right padding
+          width: "100%",             // fill viewport
+          maxWidth: "100vw",         // prevent horizontal overflow
+          boxSizing: "border-box",
+          overflowX: "hidden"
+        }}
       >
         <h1 id="wd-dashboard-title">Dashboard</h1>
 
