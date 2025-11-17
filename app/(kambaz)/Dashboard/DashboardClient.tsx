@@ -1,14 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Row, Col, Card, Button, FormControl } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
-import { addNewCourse, deleteCourse, updateCourse } from "../Courses/reducer";
-import { enrollUser, unenrollUser } from "../Courses/Enrollments/reducer";
+import { addNewCourse, deleteCourse, updateCourse, setCourses } from "../Courses/reducer";
+import { enrollUser, unenrollUser } from "../../../../kambaz-node-server-app/Kambaz/Enrollments/reducer";
 import { setCurrentUser } from "../Account/reducer";
 import { useRouter } from "next/navigation";
 import type { RootState } from "../store";
 import KambazNavigation from "../Navigation";
+import * as client from "../Courses/client";
+
 
 export default function DashboardClient() {
   const { courses } = useSelector((state: RootState) => state.coursesReducer);
@@ -32,6 +34,75 @@ export default function DashboardClient() {
   const editCourse = (event: any, c: any) => {
     event.preventDefault();
     setCourse(c);
+  };
+
+  const fetchCourses = async () => {
+    try {
+      const courses = await client.findMyCourses();
+      dispatch(setCourses(courses));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
+    fetchCourses();
+  }, [currentUser]);
+
+  const onAddCourse = async () => {
+    try {
+      let created: any;
+      // prefer client.createCourse if available, else try common alternative, else fallback locally
+      if (typeof (client as any).createCourse === "function") {
+        created = await (client as any).createCourse(course);
+      } else if (typeof (client as any).postNewCourse === "function") {
+        created = await (client as any).postNewCourse(course);
+      } else {
+        // fallback: create a local course object so UI still updates
+        created = { ...course, _id: course._id && course._id !== "0" ? course._id : `C${Date.now()}` };
+      }
+      dispatch(setCourses([...(courses ?? []), created]));
+      // enroll creator by default (preserve previous behavior)
+      if (currentUser && currentUser._id) {
+        const enrollment = { _id: `E${Date.now()}`, user: currentUser._id, course: created._id };
+        dispatch(enrollUser(enrollment));
+      }
+      // reset the local course editor
+      setCourse({
+        _id: "0",
+        name: "New Course",
+        number: "New Number",
+        startDate: "2023-09-10",
+        endDate: "2023-12-15",
+        image: "/images/reactjs.jpg",
+        description: "New Description",
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const onDeleteCourse = async (courseId: string) => {
+    try {
+      if (typeof (client as any).deleteCourse === "function") {
+        await (client as any).deleteCourse(courseId);
+      } else if (typeof (client as any).removeCourse === "function") {
+        await (client as any).removeCourse(courseId);
+      }
+      dispatch(setCourses((courses ?? []).filter((c: any) => c._id !== courseId)));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const onUpdateCourse = async () => {
+    try {
+      if (typeof (client as any).updateCourse === "function") {
+        await (client as any).updateCourse(course);
+      }
+      dispatch(setCourses((courses ?? []).map((c: any) => (c._id === course._id ? course : c))));
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const role = (currentUser?.role || "").toUpperCase();
@@ -88,35 +159,14 @@ export default function DashboardClient() {
               <button
                 className="btn btn-primary float-end"
                 id="wd-add-new-course-click"
-                onClick={() => {
-                  const newCourse = {
-                    ...course,
-                    _id: course._id && course._id !== "0" ? course._id : `C${Date.now()}`,
-                    createdBy: currentUser?._id ?? "system",
-                  };
-                  dispatch(addNewCourse(newCourse));
-                  // enroll creator by default
-                  if (currentUser && currentUser._id) {
-                    const enrollment = { _id: `E${Date.now()}`, user: currentUser._id, course: newCourse._id };
-                    dispatch(enrollUser(enrollment));
-                  }
-                  setCourse({
-                    _id: "0",
-                    name: "New Course",
-                    number: "New Number",
-                    startDate: "2023-09-10",
-                    endDate: "2023-12-15",
-                    image: "/images/reactjs.jpg",
-                    description: "New Description",
-                  });
-                }}
+                onClick={onAddCourse}
               >
                 Add
               </button>
               <button
                 className="btn btn-warning float-end me-2"
                 id="wd-update-course-click"
-                onClick={() => dispatch(updateCourse(course))}
+                onClick={onUpdateCourse}
               >
                 Update
               </button>
@@ -140,13 +190,7 @@ export default function DashboardClient() {
         <h2 id="wd-dashboard-published">
           Published Courses ({(() => {
             if (!currentUser) return 0;
-            const r = (currentUser.role || "").toUpperCase();
-            if (r === "ADMIN" || r === "USER") return courses?.length ?? 0;
-            if (showAll) return courses?.length ?? 0;
-            const filtered = courses?.filter((course: any) => {
-              return enrollments.some((enrollment: any) => enrollment.user === currentUser._id && enrollment.course === course._id);
-            }) ?? [];
-            return filtered.length;
+            return courses?.length ?? 0;
           })()})
         </h2>
         <hr />
@@ -154,56 +198,45 @@ export default function DashboardClient() {
         <div id="wd-dashboard-courses" className="mb-5">
           <Row xs={1} md={2} lg={3} xl={4} xxl={5} className="g-4">
             {(() => {
-               if (!currentUser) return null;
-               const r = (currentUser.role || "").toUpperCase();
-               let displayed: any[] = [];
-               if (r === "ADMIN" || r === "USER" || showAll) {
-                 displayed = courses ?? [];
-               } else {
-                 displayed = (courses ?? []).filter((course: any) =>
-                   enrollments.some((enrollment: any) => enrollment.user === currentUser._id && enrollment.course === course._id)
-                 );
-               }
-               return displayed.map((c: any) => (
+              if (!currentUser) return null;
+              const displayed = courses ?? [];
+              return displayed.map((c: any) => (
                 <Col key={c._id} className="wd-dashboard-course">
-                   <Card className="h-100">
-                     <Card.Img src={c.image ?? "/images/reactjs.jpg"} variant="top" width="100%" height={160} />
-                     <Card.Body className="card-body">
-                       <Card.Title className="wd-dashboard-course-title text-nowrap overflow-hidden">{c.name}</Card.Title>
-                       <Card.Text className="wd-dashboard-course-description overflow-hidden" style={{ height: "100px" }}>{c.description}</Card.Text>
-                       <Button variant="primary" onClick={(e) => {
-                         e.preventDefault();
-                         const enrolled = enrollments.some((en: any) => en.user === currentUser._id && en.course === c._id);
-                         if (enrolled) {
-                           router.push(`/Courses/${c._id}/Home`);
-                         } else {
-                           alert("You are not enrolled in this course.");
-                         }
-                       }}> Go </Button>
-                     </Card.Body>
-                     <Card.Footer className="d-flex justify-content-end gap-2">
-                       {currentUser && (() => {
-                         const enrolled = enrollments.some((en: any) => en.user === currentUser._id && en.course === c._id);
-                         if (enrolled) {
-                           return <Button variant="outline-danger" size="sm" onClick={(ev) => { ev.preventDefault(); dispatch(unenrollUser({ user: currentUser._id, course: c._id })); }} id={`wd-unenroll-${c._id}`}>Unenroll</Button>;
-                         }
-                         return <Button variant="success" size="sm" onClick={(ev) => { ev.preventDefault(); dispatch(enrollUser({ user: currentUser._id, course: c._id })); }} id={`wd-enroll-${c._id}`}>Enroll</Button>;
-                       })()}
+                  <Card className="h-100">
+                    <Card.Img src={c.image ?? "/images/reactjs.jpg"} variant="top" width="100%" height={160} />
+                    <Card.Body className="card-body">
+                      <Card.Title className="wd-dashboard-course-title text-nowrap overflow-hidden">{c.name}</Card.Title>
+                      <Card.Text className="wd-dashboard-course-description overflow-hidden" style={{ height: "100px" }}>{c.description}</Card.Text>
+                      <Button variant="primary" onClick={(e) => {
+                        e.preventDefault();
+                        router.push(`/Courses/${c._id}/Home`);
+                      }}> Go </Button>
+                    </Card.Body>
+                    <Card.Footer className="d-flex justify-content-end gap-2">
+                      {currentUser && (
+                        enrollments.some((en: any) => en.user === currentUser._id && en.course === c._id)
+                          ? <Button variant="outline-danger" size="sm" onClick={(ev) => { ev.preventDefault(); dispatch(unenrollUser({ user: currentUser._id, course: c._id })); }} id={`wd-unenroll-${c._id}`}>Unenroll</Button>
+                          : <Button variant="success" size="sm" onClick={(ev) => { ev.preventDefault(); dispatch(enrollUser({ user: currentUser._id, course: c._id })); }} id={`wd-enroll-${c._id}`}>Enroll</Button>
+                      )}
 
-                       {canEdit && (
-                         <>
-                           <Button variant="warning" className="me-2" onClick={(e) => editCourse(e, c)} id="wd-edit-course-click">Edit</Button>
-                           <Button variant="danger" onClick={(event) => { event.preventDefault(); dispatch(deleteCourse(c._id)); }} id="wd-delete-course-click">Delete</Button>
-                         </>
-                       )}
-                     </Card.Footer>
-                   </Card>
-                 </Col>
-               ));
-             })()}
-           </Row>
-         </div>
-       </div>
-     </>
-   );
+                      {canEdit && (
+                        <>
+                          <Button variant="warning" className="me-2" onClick={(e) => editCourse(e, c)} id="wd-edit-course-click">
+                            Edit
+                          </Button>
+                          <Button variant="danger" onClick={(event) => { event.preventDefault(); onDeleteCourse(c._id); }} id="wd-delete-course-click">
+                            Delete
+                          </Button>
+                        </>
+                      )}
+                    </Card.Footer>
+                  </Card>
+                </Col>
+              ));
+            })()}
+          </Row>
+        </div>
+      </div>
+    </>
+  );
 }

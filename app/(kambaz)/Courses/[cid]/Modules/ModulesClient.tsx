@@ -3,11 +3,12 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "next/navigation";
 import type { RootState, AppDispatch } from "../../../store";
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { ListGroup, Button, Dropdown } from "react-bootstrap";
 import ModuleEditor from "./ModuleEditor";
 import { BsGripVertical } from "react-icons/bs";
 import { FaPlus, FaTrash, FaPencilAlt, FaCheckCircle, FaEllipsisV } from "react-icons/fa";
+import * as client from "../../client";
 
 export default function ModulesClient() {
   const { cid } = useParams() as { cid?: string };
@@ -26,26 +27,42 @@ export default function ModulesClient() {
   const moduleId = (m: any) => m?.id ?? m?._id;
   const lessonId = (l: any) => l?.id ?? l?._id;
 
-  // Filter modules for this course
-  const courseModules = useMemo(
-    () => (modules || []).filter((m: any) => m.course === cid),
-    [modules, cid]
-  );
-  const displayedModules = courseModules;
+  // fetch modules for this course from the server and populate reducer
+  useEffect(() => {
+    const fetchModules = async () => {
+      if (!cid) return;
+      try {
+        const mods =
+          typeof (client as any).findModulesForCourse === "function"
+            ? await (client as any).findModulesForCourse(cid)
+            : [];
+        dispatch({ type: "modules/setModules", payload: mods });
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchModules();
+  }, [cid, dispatch]);
+
+  // Server returns modules scoped to the course, use them directly
+  const displayedModules = modules ?? [];
 
   // Add Module (create both id & _id so reducer variants work)
-  const handleAddModule = () => {
-    if (!moduleName?.trim()) return;
-    const idBase = `M${Date.now()}`;
-    const payload = {
-      id: idBase,
-      _id: idBase,
-      name: moduleName.trim(),
-      course: cid,
-      lessons: []
-    };
-    dispatch({ type: "modules/addModule", payload });
-    setModuleName("");
+  // Create module on server and add created module to reducer
+  const onCreateModuleForCourse = async () => {
+    if (!cid || !moduleName?.trim()) return;
+    try {
+      const newModulePayload = { name: moduleName.trim(), course: cid };
+      const created =
+        typeof (client as any).createModuleForCourse === "function"
+          ? await (client as any).createModuleForCourse(cid, newModulePayload)
+          : { ...newModulePayload, id: `M${Date.now()}`, _id: `M${Date.now()}`, lessons: [] };
+      // dispatch into reducer so modules state is updated
+      dispatch({ type: "modules/setModules", payload: [...(modules ?? []), created] });
+      setModuleName("");
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleEditModule = (moduleIdValue: string) => {
@@ -57,15 +74,35 @@ export default function ModulesClient() {
     }
   };
 
-  const handleUpdateModule = () => {
+  // Replace previous local update with server-backed update
+  const handleUpdateModule = async () => {
     if (!moduleName?.trim() || !editingModuleId) return;
     const mod = modules.find((m: any) => moduleId(m) === editingModuleId);
-    if (mod) {
-      dispatch({
-        type: "modules/updateModule",
-        payload: { ...mod, name: moduleName.trim(), id: moduleId(mod), _id: moduleId(mod) }
-      });
+    if (!mod) {
+      setModuleName("");
+      setEditingModuleId(null);
+      return;
     }
+
+    const updatedModule = { ...mod, name: moduleName.trim(), id: moduleId(mod), _id: moduleId(mod) };
+
+    try {
+      if (typeof (client as any).updateModule === "function") {
+        // send update to server
+        await (client as any).updateModule(updatedModule);
+      } else {
+        console.warn("client.updateModule not available; performing client-side update only.");
+      }
+      // update reducer state with the updated module
+      const next = (modules ?? []).map((m: any) =>
+        moduleId(m) === moduleId(updatedModule) ? updatedModule : m
+      );
+      dispatch({ type: "modules/setModules", payload: next });
+    } catch (err) {
+      console.error("Failed to update module:", err);
+      alert("Could not update module. See console for details.");
+    }
+
     setModuleName("");
     setEditingModuleId(null);
   };
@@ -77,6 +114,26 @@ export default function ModulesClient() {
     const next: Record<string, boolean> = {};
     displayedModules.forEach((m: any) => (next[moduleId(m)] = anyExpanded));
     setCollapsed(next);
+  };
+
+  // New: remove module handler - calls server, then updates reducer state
+  const onRemoveModule = async (mid: string) => {
+    if (!mid) return;
+    if (!confirm("Delete module and all its lessons?")) return;
+    try {
+      if (typeof (client as any).deleteModule === "function") {
+        await (client as any).deleteModule(mid);
+      } else {
+        // fallback: no-op server side, proceed with client-side removal
+        console.warn("client.deleteModule not available; performing client-side removal only.");
+      }
+      // filter modules using moduleId accessor to handle id/_id
+      const next = (modules ?? []).filter((m: any) => moduleId(m) !== mid);
+      dispatch({ type: "modules/setModules", payload: next });
+    } catch (err) {
+      console.error("Failed to delete module:", err);
+      alert("Could not delete module. See console for details.");
+    }
   };
 
   return (
@@ -147,8 +204,8 @@ export default function ModulesClient() {
                     style={{ cursor: "pointer" }}
                     title="Delete module"
                     onClick={() => {
-                      if (!confirm(`Delete module "${m.name}" and all its lessons?`)) return;
-                      dispatch({ type: "modules/deleteModule", payload: mid });
+                      // call new handler that removes on server and updates reducer
+                      onRemoveModule(mid);
                     }}
                   />
                   <FaCheckCircle className="text-success" title="Published" />
@@ -229,11 +286,11 @@ export default function ModulesClient() {
         dialogTitle={editingModuleId ? "Edit Module" : "Add Module"}
         moduleName={moduleName}
         setModuleName={setModuleName}
-        addModule={() => {
+        addModule={async () => {
           if (editingModuleId) {
-            handleUpdateModule();
+            await handleUpdateModule(); // ensure we call server-backed update when editing
           } else {
-            handleAddModule();
+            await onCreateModuleForCourse();
           }
           setShowModal(false);
         }}

@@ -1,15 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { modules } from "../../../Database";
 import { v4 as uuidv4 } from "uuid";
 
+// remove Database dependency and start with empty modules array
 const initialState = {
-  modules: modules,
+  modules: [],
 };
 
 const modulesSlice = createSlice({
   name: "modules",
   initialState,
   reducers: {
+    // new: set modules from server
+    setModules: (state, { payload }: any) => {
+      state.modules = payload;
+    },
+
     addModule: (state, { payload: module }: any) => {
       const newModule: any = {
         id: uuidv4(), // Reducer creates the ID
@@ -46,6 +51,6 @@ const modulesSlice = createSlice({
   },
 });
 
-// Export the new deleteLesson action
-export const { addModule, deleteModule, updateModule, editModule, deleteLesson } = modulesSlice.actions;
+// include setModules in exported actions
+export const { addModule, deleteModule, updateModule, editModule, deleteLesson, setModules } = modulesSlice.actions;
 export default modulesSlice.reducer;

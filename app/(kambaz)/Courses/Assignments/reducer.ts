@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { assignments } from "../../Database";
+import { assignments } from "../../../../../kambaz-node-server-app/Kambaz/Database";
 
 type Assignment = {
   _id: string;

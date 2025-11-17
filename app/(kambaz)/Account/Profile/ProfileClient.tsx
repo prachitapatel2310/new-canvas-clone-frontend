@@ -6,6 +6,7 @@ import { setCurrentUser } from "../reducer";
 import type { RootState } from "../../store";
 import { Button, FormControl } from "react-bootstrap";
 import { useRouter } from "next/navigation";
+import * as client from "../client";
 
 export default function ProfileClient() {
   const [profile, setProfile] = useState<any>({});
@@ -21,10 +22,17 @@ export default function ProfileClient() {
     setProfile(currentUser);
   };
 
-  const signout = () => {
+  const signout = async() => {
+    await client.signout();
     dispatch(setCurrentUser(null));
     router.push("/Account/Signin");
   };
+
+  const updateProfile = async () => {
+    const updatedProfile = await client.updateUser(profile);
+    dispatch(setCurrentUser(updatedProfile));
+  };
+
 
   useEffect(() => {
     fetchProfile();
@@ -91,6 +99,9 @@ export default function ProfileClient() {
           <small><strong>Last activity:</strong> {profile.lastActivity ?? "-"} &nbsp; <strong>Total:</strong> {profile.totalActivity ?? "-"}</small>
         </div>
 
+        <Button onClick={updateProfile} className="w-100 mb-2" id="wd-update-profile-btn">
+          Update
+        </Button>
         <Button onClick={signout} className="w-100 mb-2" id="wd-signout-btn">
           Sign out
         </Button>
