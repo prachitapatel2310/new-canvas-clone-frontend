@@ -44,3 +44,11 @@ export const updateModule = async (module: any) => {
   return data;
 };
 
+export const createCourse = async (course: any) => {
+  const { data } = await axiosWithCredentials.post(
+    `${USERS_API}/current/courses`,
+    course
+  );
+  return data;
+};
+

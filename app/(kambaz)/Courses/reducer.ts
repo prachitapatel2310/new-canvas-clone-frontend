@@ -1,8 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { courses } from "../../../../kambaz-node-server-app/Kambaz/Database";
 import { v4 as uuidv4 } from "uuid";
 const initialState = {
- courses: courses,
+  courses: [], // Initial state should be empty
+  course: {
+    _id: "0",
+    name: "New Course",
+    number: "New Number",
+    startDate: "2023-09-10",
+    endDate: "2023-12-15",
+    image: "/images/reactjs.jpg",
+    description: "New Description",
+  },
 };
 const coursesSlice = createSlice({
  name: "courses",

@@ -16,7 +16,7 @@ export default function PeopleTableClient() {
   useEffect(() => {
     let mounted = true;
     setLoading(true);
-    import("../../../../../../../kambaz-node-server-app/Kambaz/Database")
+    import("../../../../../(kambaz)/Account/client")
       .then((mod) => {
         if (!mounted) return;
         const db: any = mod || {};
