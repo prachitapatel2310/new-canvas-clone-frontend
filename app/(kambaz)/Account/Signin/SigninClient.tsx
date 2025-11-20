@@ -62,7 +62,7 @@ export default function SigninClient() {
           Sign in
         </Button>
 
-        <Link href="/(kambaz)/Account/Signup" id="wd-signup-link" className="btn btn-outline-primary w-100">
+        <Link href="/Account/Signup" id="wd-signup-link" className="btn btn-outline-primary w-100">
           Sign up
         </Link>
 
