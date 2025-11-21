@@ -20,7 +20,7 @@ export default function SigninClient() {
       const user = await client.signin(credentials);
       if (user) {
         dispatch(setCurrentUser(user));
-        router.push("/(kambaz)/Dashboard");
+        router.push("/Dashboard");
       } else {
         setError("Invalid username or password.");
       }
