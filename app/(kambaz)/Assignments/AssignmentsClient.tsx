@@ -28,6 +28,31 @@ export default function AssignmentsClient() {
   console.log("📍 Course ID:", cid);
   console.log("📚 Assignments from store:", assignments);
 
+useEffect(() => {
+  console.log('\n=== ASSIGNMENTS COMPONENT MOUNTED ===');
+  console.log('Course ID (cid):', cid);
+  console.log('Current assignments in state:', assignments);
+  
+  const fetch = async () => {
+    if (!cid) {
+      console.log('No course ID, skipping fetch');
+      return;
+    }
+    try {
+      console.log('Calling findAssignmentsForCourse...');
+      const data = await client.findAssignmentsForCourse(cid);
+      
+      console.log('Received data from API:', data);
+      console.log('Dispatching to Redux...');
+      dispatch(setAssignments(data));
+      console.log('Dispatch complete');
+    } catch (e) {
+      console.error('COMPONENT ERROR:', e);
+    }
+  };
+  fetch();
+}, [cid, dispatch]);
+
   useEffect(() => {
     const fetch = async () => {
       if (!cid) return;
