@@ -24,6 +24,10 @@ export default function AssignmentsClient() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [title, setTitle] = useState("");
 
+  console.log("🔍 AssignmentsClient rendering");
+  console.log("📍 Course ID:", cid);
+  console.log("📚 Assignments from store:", assignments);
+
   useEffect(() => {
     const fetch = async () => {
       if (!cid) return;
