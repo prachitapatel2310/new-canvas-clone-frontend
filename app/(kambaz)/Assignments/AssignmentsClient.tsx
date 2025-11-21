@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../store"; // adjust path to your store
-import * as client from "./client";
+import * as client from "../Courses/Assignments/client";
 import { ListGroup, Button } from "react-bootstrap";
 import { FaPlus, FaTrash, FaPencilAlt } from "react-icons/fa";
 import AssignmentEditor from "./AssignmentEditor";
