@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
-import type { RootState, AppDispatch } from "../store"; // adjust path to your store
-import * as client from "../Courses/Assignments/client";
+import type { RootState, AppDispatch } from "../store"; // ← FIXED PATH
+import * as client from "../Courses/Assignments/client"; // ← FIXED PATH
 import { ListGroup, Button } from "react-bootstrap";
 import { FaPlus, FaTrash, FaPencilAlt } from "react-icons/fa";
 import AssignmentEditor from "./AssignmentEditor";
@@ -13,7 +13,7 @@ import {
   addAssignment,
   updateAssignment as updateAssignmentAction,
   deleteAssignment as deleteAssignmentAction,
-} from "./reducer";
+} from "../Courses/Assignments/reducer"; // ← FIXED PATH
 
 export default function AssignmentsClient() {
   const { cid } = useParams() as { cid?: string };
@@ -24,43 +24,30 @@ export default function AssignmentsClient() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [title, setTitle] = useState("");
 
-  console.log("🔍 AssignmentsClient rendering");
+  console.log("🚀 AssignmentsClient RENDERING");
   console.log("📍 Course ID:", cid);
   console.log("📚 Assignments from store:", assignments);
 
-useEffect(() => {
-  console.log('\n=== ASSIGNMENTS COMPONENT MOUNTED ===');
-  console.log('Course ID (cid):', cid);
-  console.log('Current assignments in state:', assignments);
-  
-  const fetch = async () => {
-    if (!cid) {
-      console.log('No course ID, skipping fetch');
-      return;
-    }
-    try {
-      console.log('Calling findAssignmentsForCourse...');
-      const data = await client.findAssignmentsForCourse(cid);
-      
-      console.log('Received data from API:', data);
-      console.log('Dispatching to Redux...');
-      dispatch(setAssignments(data));
-      console.log('Dispatch complete');
-    } catch (e) {
-      console.error('COMPONENT ERROR:', e);
-    }
-  };
-  fetch();
-}, [cid, dispatch]);
-
+  // ✅ KEEP ONLY ONE useEffect
   useEffect(() => {
+    console.log('\n=== ASSIGNMENTS COMPONENT MOUNTED ===');
+    console.log('Course ID (cid):', cid);
+    
     const fetch = async () => {
-      if (!cid) return;
+      if (!cid) {
+        console.log('❌ No course ID, skipping fetch');
+        return;
+      }
       try {
+        console.log('🔄 Calling findAssignmentsForCourse...');
         const data = await client.findAssignmentsForCourse(cid);
+        
+        console.log('✅ Received data from API:', data);
+        console.log('📊 Dispatching to Redux...');
         dispatch(setAssignments(data));
+        console.log('✅ Dispatch complete');
       } catch (e) {
-        console.error(e);
+        console.error('❌ COMPONENT ERROR:', e);
       }
     };
     fetch();
