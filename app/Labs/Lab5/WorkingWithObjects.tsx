@@ -1,6 +1,11 @@
+// Labs/Lab5/WorkingWithObjects.tsx
+
 "use client";
 
 import React, { useState } from "react";
+
+// Define the environment variable at the top
+const HTTP_SERVER = process.env.NEXT_PUBLIC_HTTP_SERVER;
 
 export default function WorkingWithObjects() {
   const [assignment, setAssignment] = useState<any>(null);
@@ -13,7 +18,10 @@ export default function WorkingWithObjects() {
   const [scoreInput, setScoreInput] = useState<number | "">("");
   const [completedInput, setCompletedInput] = useState<boolean>(false);
 
-  const fetchJson = async (url: string) => {
+  // Updated to use the external HTTP_SERVER variable
+  const fetchJson = async (path: string) => {
+    // Construct the full URL using HTTP_SERVER and the path
+    const url = `${HTTP_SERVER}${path}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error(`Request failed: ${res.status}`);
     return res.json();
@@ -30,6 +38,7 @@ export default function WorkingWithObjects() {
             className="btn btn-outline-primary me-2"
             onClick={async () => {
               try {
+                // Use the path here
                 const res = await fetchJson("/lab5/assignment");
                 setAssignment(res);
               } catch (e) {
@@ -44,6 +53,7 @@ export default function WorkingWithObjects() {
             className="btn btn-outline-secondary me-2"
             onClick={async () => {
               try {
+                // Use the path here
                 const res = await fetchJson("/lab5/assignment/title");
                 setAssignmentTitle(res);
               } catch (e) {

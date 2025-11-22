@@ -27,13 +27,13 @@ export default function WorkingWithArrays() {
       <hr />
       <h3>Filtering Array Items</h3>
       <a id="wd-retrieve-completed-todos" className="btn btn-primary"
-        href={`${API}?completed=true`}>
+        href={`${HTTP_SERVER}/lab5/todos?completed=true`}>
         Get Completed Todos
       </a><hr />
 
       <h3>Creating new Items in an Array</h3>
       <a id="wd-retrieve-completed-todos" className="btn btn-primary"
-        href={`${API}/create`}>
+        href={`${HTTP_SERVER}/lab5/todos/create`}>
         Create Todo
       </a><hr />
 
@@ -55,7 +55,7 @@ export default function WorkingWithArrays() {
       <h3>On Your Own (Update description & completed)</h3>
       <div className="mb-2">
         <a id="wd-update-description" className="btn btn-primary float-end ms-2"
-          href={`${API}/${todo.id}/description/${encodeURIComponent(todo.description)}`}>
+          href={`${HTTP_SERVER}/lab5/todos/${todo.id}/description/${encodeURIComponent(todo.description)}`}>
           Describe Todo ID = {todo.id}
         </a>
         <FormControl defaultValue={todo.description} className="w-75"
@@ -64,7 +64,7 @@ export default function WorkingWithArrays() {
 
       <div className="mb-2">
         <a id="wd-update-completed" className="btn btn-primary float-end ms-2"
-          href={`${API}/${todo.id}/completed/${todo.completed}`}>
+          href={`${HTTP_SERVER}/lab5/todos/${todo.id}/completed/${todo.completed}`}>
           Complete Todo ID = {todo.id}
         </a>
         <label className="form-check-label me-2">Completed</label>
