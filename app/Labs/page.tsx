@@ -23,6 +23,10 @@ export default function Labs() {
          <Link href="/Labs/Lab4/" id="wd-lab4-link">
            Lab 4: React JS </Link>
        </li>
+       <li>
+          <Link href="/Labs/Lab5/" id="wd-lab5-link">
+            Lab 5: Database</Link>
+        </li>
         <li>
           <Link href="/" id="wd-kambaz-link">
           Kambaz</Link>  

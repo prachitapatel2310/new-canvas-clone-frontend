@@ -22,8 +22,9 @@ export default function TOC() {
           <NavItem>
             <NavLink href="/Labs/Lab4" as={Link}>Lab 4</NavLink>
           </NavItem>
+
           <NavItem>
-            <NavLink href="/" as={Link}>Kambaz</NavLink>
+            <NavLink href="/Labs/Lab5" as={Link}>Lab 5</NavLink>
           </NavItem>
           <NavItem>
             <NavLink href="https://github.com/Vishwapujara">My GitHub</NavLink>
