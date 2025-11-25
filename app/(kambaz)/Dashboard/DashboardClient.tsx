@@ -317,7 +317,7 @@ export default function DashboardClient() {
   const router = useRouter();
 
   const [showAll, setShowAll] = useState<boolean>(false);
-  const isInitialMount = useRef(true);
+  const hasCheckedSession = useRef(false);
 
   const [course, setCourse] = useState<any>({
     _id: "0",
@@ -329,18 +329,14 @@ export default function DashboardClient() {
     description: "New Description",
   });
 
-  // Only redirect if currentUser changes from having a value to null (sign out)
-  // Don't redirect on initial mount when currentUser is null (Session is still fetching)
+  // Only redirect if user explicitly signs out (currentUser goes from having value to null)
+  // But NOT on initial load when currentUser might be null before Session fetches
   useEffect(() => {
-    if (isInitialMount.current) {
-      console.log("🏠 Dashboard: Initial mount, waiting for Session to fetch profile...");
-      isInitialMount.current = false;
-      return;
-    }
-
-    if (!currentUser) {
+    if (currentUser === null && hasCheckedSession.current) {
       console.warn("⚠️ Dashboard: User signed out, redirecting to signin");
       router.replace("/Account/Signin");
+    } else if (currentUser) {
+      hasCheckedSession.current = true;
     }
   }, [currentUser, router]);
 
@@ -453,28 +449,6 @@ export default function DashboardClient() {
   
   const coursesToDisplay = (showAll ? courses : courses.filter((c: any) => c.isEnrolled)) ?? [];
 
-  // Show loading while waiting for Session to fetch user profile
-  if (!currentUser) {
-    return (
-      <div 
-        style={{ 
-          display: "flex", 
-          justifyContent: "center", 
-          alignItems: "center", 
-          minHeight: "100vh",
-          backgroundColor: "#f5f5f5"
-        }}
-      >
-        <div style={{ textAlign: "center" }}>
-          <div className="spinner-border mb-3" role="status" style={{ width: "50px", height: "50px", color: "#dc3545" }}>
-            <span className="visually-hidden">Loading...</span>
-          </div>
-          <p className="text-muted">Loading dashboard...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <>
       <KambazNavigation />
@@ -492,18 +466,20 @@ export default function DashboardClient() {
       >
         <h1 id="wd-dashboard-title">Dashboard</h1>
 
-        <div className="mb-2 d-flex align-items-center gap-2">
-          <small className="text-muted">
-            Signed in as <strong>{currentUser.firstName} {currentUser.lastName}</strong>
-          </small>
-          <button
-            className="btn btn-outline-secondary btn-sm"
-            onClick={handleSignout}
-            id="wd-signout-btn"
-          >
-            Sign out
-          </button>
-        </div>
+        {currentUser && (
+          <div className="mb-2 d-flex align-items-center gap-2">
+            <small className="text-muted">
+              Signed in as <strong>{currentUser.firstName} {currentUser.lastName}</strong>
+            </small>
+            <button
+              className="btn btn-outline-secondary btn-sm"
+              onClick={handleSignout}
+              id="wd-signout-btn"
+            >
+              Sign out
+            </button>
+          </div>
+        )}
 
         <hr />
 
