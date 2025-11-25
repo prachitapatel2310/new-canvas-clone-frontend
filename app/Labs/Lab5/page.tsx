@@ -3,6 +3,7 @@ import PathParameters from "./PathParameters";
 import QueryParameters from "./QueryParameter";
 import WorkingWithObjects from "./WorkingWithObjects";
 import WorkingWithArrays from "./WorkingWithArray";
+import HttpClient from "./HttpClient";
 import WorkingWithArraysAsynchronously from "./WorkingWithArraysAsynchronously";
 import WorkingWithObjectsAsynchronously from "./WorkingWithObjectsAsynchronously";
 
@@ -13,15 +14,19 @@ export default function Lab5() {
       <h2>Lab 5</h2>
       <div className="list-group">
         <a href={`${HTTP_SERVER}/lab5/welcome`} className="list-group-item">
-           Welcome
+          Welcome
         </a>
-      </div><hr/>
-        <EnvironmentVariables />
-        <PathParameters />
-        <QueryParameters />
-        <WorkingWithObjects />
-        <WorkingWithObjectsAsynchronously />
-        <WorkingWithArrays />
-        <WorkingWithArraysAsynchronously />
+      </div><hr />
+      <EnvironmentVariables />
+      <PathParameters />
+      <QueryParameters />
+      <WorkingWithObjects />
+
+      <WorkingWithArrays />
+      <h1>Asynchronous Operations with HTTP Client</h1>
+      <HttpClient />
+      <WorkingWithObjectsAsynchronously />
+      <WorkingWithArraysAsynchronously />
     </div>
-);}
+  );
+}
