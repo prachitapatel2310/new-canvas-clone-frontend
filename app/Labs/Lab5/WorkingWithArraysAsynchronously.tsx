@@ -1,94 +1,3 @@
-// "use client";
-// import React, { useState, useEffect } from "react";
-// import { ListGroup, ListGroupItem, FormControl } from "react-bootstrap";
-// import { FaTrash, FaPlusCircle } from "react-icons/fa";
-// import { TiDelete } from "react-icons/ti";
-// import { FaPencil } from "react-icons/fa6";
-
-// import * as client from "./client";
-// export default function WorkingWithArraysAsynchronously() {
-//     const [todos, setTodos] = useState<any[]>([]);
-//     const fetchTodos = async () => {
-//         const todos = await client.fetchTodos();
-//         setTodos(todos);
-//     };
-//     const removeTodo = async (todo: any) => {
-//         const updatedTodos = await client.removeTodo(todo);
-//         setTodos(updatedTodos);
-//     };
-//     const createNewTodo = async () => {
-//         const todos = await client.createNewTodo();
-//         setTodos(todos);
-//     };
-//     const postNewTodo = async () => {
-//         const newTodo = await client.postNewTodo({ title: "New Posted Todo", completed: false, });
-//         setTodos([...todos, newTodo]);
-//     };
-//     const deleteTodo = async (todo: any) => {
-//         try {
-//             await client.deleteTodo(todo);
-//             const newTodos = todos.filter((t) => t.id !== todo.id);
-//             setTodos(newTodos);
-//         } catch (error: any) {
-//             console.log(error);
-//             setErrorMessage(error.response.data.message);
-//         }
-//     };
-//     const editTodo = (todo: any) => {
-//         const updatedTodos = todos.map(
-//             (t) => t.id === todo.id ? { ...todo, editing: true } : t);
-//         setTodos(updatedTodos);
-//     };
-//     const [errorMessage, setErrorMessage] = useState(null);
-//     const updateTodo = async (todo: any) => {
-//         try {
-//             await client.updateTodo(todo);
-//             setTodos(todos.map((t) => (t.id === todo.id ? todo : t)));
-//         } catch (error: any) {
-//             setErrorMessage(error.response.data.message);
-//         }
-//     };
-
-//     return (
-//         <div id="wd-asynchronous-arrays">
-//             <h3>Working with Arrays Asynchronously</h3>
-//             {errorMessage && (<div id="wd-todo-error-message" className="alert alert-danger mb-2 mt-2">{errorMessage}</div>)}
-//             <h4>Todos  <FaPlusCircle onClick={createNewTodo} className="text-success float-end fs-3" />
-//                 <FaPlusCircle onClick={postNewTodo} className="text-primary float-end fs-3 me-3" id="wd-post-todo" />
-//                 <TiDelete onClick={() => deleteTodo(todos)} className="text-danger float-end me-2 fs-3" id="wd-delete-todo" />
-//                 <FaPencil onClick={() => editTodo(todos)} className="text-primary float-end me-2 mt-1" />
-
-//             </h4>
-//             <ListGroup>
-//                 {todos.map((todo) => (
-//                     <ListGroupItem key={todo.id}>
-//                         <FaTrash onClick={() => removeTodo(todo)}
-//                             className="text-danger float-end mt-1" id="wd-remove-todo" />
-
-//                         <input type="checkbox" className="form-check-input me-2"
-//                             onChange={(e) => updateTodo({ ...todo, completed: e.target.checked })} />
-//                         {!todo.editing ? (todo.title) : (
-//                             <FormControl className="w-50 float-start" defaultValue={todo.title}
-//                                 onKeyDown={(e) => {
-//                                     if (e.key === "Enter") {
-//                                         updateTodo({ ...todo, editing: false });
-//                                     }
-//                                 }}
-//                                 onChange={(e) =>
-//                                     updateTodo({ ...todo, title: e.target.value })
-//                                 }
-//                             />
-//                         )}
-
-//                         <span style={{ textDecoration: todo.completed ? "line-through" : "none" }}>
-//                             {todo.title} </span>
-//                     </ListGroupItem>
-//                 ))}
-//             </ListGroup> <hr />
-//         </div>
-//     );
-// }
-
 "use client";
 import React, { useState, useEffect } from "react";
 import { ListGroup, ListGroupItem, FormControl } from "react-bootstrap";
@@ -213,14 +122,14 @@ export default function WorkingWithArraysAsynchronously() {
     };
 
     return (
-        <div id="wd-asynchronous-arrays" className="container mt-4">
+        <div id="wd-asynchronous-arrays">
             <h3>Working with Arrays Asynchronously</h3>
 
             {/* Error Message */}
             {errorMessage && (
                 <div
                     id="wd-todo-error-message"
-                    className="alert alert-danger alert-dismissible fade show"
+                    className="alert alert-danger alert-dismissible fade show mb-2 mt-2"
                     role="alert"
                 >
                     {errorMessage}
@@ -232,26 +141,24 @@ export default function WorkingWithArraysAsynchronously() {
                 </div>
             )}
 
-            {/* Header with Action Buttons */}
-            <div className="d-flex justify-content-between align-items-center mb-3">
-                <h4 className="mb-0">Todos ({todos.length})</h4>
-                <div className="d-flex gap-2">
-                    <FaPlusCircle
-                        onClick={createNewTodo}
-                        className="text-success cursor-pointer"
-                        style={{ cursor: "pointer", fontSize: "1.5rem" }}
-                        title="Create Todo (GET)"
-                        id="wd-create-todo"
-                    />
-                    <FaPlusCircle
-                        onClick={postNewTodo}
-                        className="text-primary cursor-pointer"
-                        style={{ cursor: "pointer", fontSize: "1.5rem" }}
-                        title="Post New Todo (POST)"
-                        id="wd-post-todo"
-                    />
-                </div>
-            </div>
+            {/* Header with Create Buttons */}
+            <h4>
+                Todos
+                <FaPlusCircle 
+                    onClick={createNewTodo} 
+                    className="text-success float-end fs-3" 
+                    id="wd-create-todo"
+                    style={{ cursor: "pointer", marginLeft: "1rem" }}
+                    title="Create Todo (GET)"
+                />
+                <FaPlusCircle 
+                    onClick={postNewTodo} 
+                    className="text-primary float-end fs-3" 
+                    id="wd-post-todo"
+                    style={{ cursor: "pointer" }}
+                    title="Post New Todo (POST)"
+                />
+            </h4>
 
             {/* Todos List */}
             <ListGroup>
@@ -260,14 +167,21 @@ export default function WorkingWithArraysAsynchronously() {
                 ) : (
                     todos.map((todo) => (
                         <ListGroupItem key={todo.id} className="d-flex align-items-center gap-2">
+                            {/* Remove Button (GET method) */}
+                            <FaTrash 
+                                onClick={() => removeTodo(todo)}
+                                className="text-warning cursor-pointer" 
+                                id="wd-remove-todo"
+                                style={{ cursor: "pointer" }}
+                                title="Remove todo (GET)"
+                            />
+
                             {/* Checkbox */}
-                            <input
-                                type="checkbox"
+                            <input 
+                                type="checkbox" 
                                 className="form-check-input"
                                 checked={todo.completed || false}
-                                onChange={(e) =>
-                                    handleCompletedChange(todo, e.target.checked)
-                                }
+                                onChange={(e) => handleCompletedChange(todo, e.target.checked)}
                                 style={{ cursor: "pointer" }}
                             />
 
@@ -275,9 +189,7 @@ export default function WorkingWithArraysAsynchronously() {
                             {!todo.editing ? (
                                 <span
                                     style={{
-                                        textDecoration: todo.completed
-                                            ? "line-through"
-                                            : "none",
+                                        textDecoration: todo.completed ? "line-through" : "none",
                                         flex: 1,
                                     }}
                                 >
@@ -287,9 +199,7 @@ export default function WorkingWithArraysAsynchronously() {
                                 <FormControl
                                     type="text"
                                     value={todo.title}
-                                    onChange={(e) =>
-                                        handleTitleChange(todo, e.target.value)
-                                    }
+                                    onChange={(e) => handleTitleChange(todo, e.target.value)}
                                     onKeyDown={(e) => handleEditKeyPress(e as any, todo)}
                                     onBlur={() => updateTodo({ ...todo, editing: false })}
                                     autoFocus
@@ -298,30 +208,21 @@ export default function WorkingWithArraysAsynchronously() {
                             )}
 
                             {/* Edit Button */}
-                            <FaPencil
+                            <FaPencil 
                                 onClick={() => editTodo(todo)}
-                                className="text-primary cursor-pointer"
+                                className="text-primary cursor-pointer" 
                                 style={{ cursor: "pointer" }}
-                                title="Edit todo"
                                 id="wd-edit-todo"
-                            />
-
-                            {/* Remove Button (GET method) */}
-                            <FaTrash
-                                onClick={() => removeTodo(todo)}
-                                className="text-warning cursor-pointer"
-                                style={{ cursor: "pointer" }}
-                                title="Remove todo (GET)"
-                                id="wd-remove-todo"
+                                title="Edit todo"
                             />
 
                             {/* Delete Button (DELETE method) */}
-                            <FaTrash
+                            <FaTrash 
                                 onClick={() => deleteTodo(todo)}
-                                className="text-danger cursor-pointer"
+                                className="text-danger cursor-pointer" 
+                                id="wd-delete-todo"
                                 style={{ cursor: "pointer" }}
                                 title="Delete todo (DELETE)"
-                                id="wd-delete-todo"
                             />
 
                             {/* ID Badge */}
