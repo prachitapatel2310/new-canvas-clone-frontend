@@ -6,7 +6,6 @@ import WorkingWithArrays from "./WorkingWithArray";
 import HttpClient from "./HttpClient";
 import WorkingWithArraysAsynchronously from "./WorkingWithArraysAsynchronously";
 import WorkingWithObjectsAsynchronously from "./WorkingWithObjectsAsynchronously";
-import LabRubrics from "./LabRubrics";
 
 const HTTP_SERVER = process.env.NEXT_PUBLIC_HTTP_SERVER;
 export default function Lab5() {
@@ -28,8 +27,6 @@ export default function Lab5() {
       <HttpClient />
       <WorkingWithObjectsAsynchronously />
       <WorkingWithArraysAsynchronously />
-      <br />
-      <LabRubrics />
     </div>
   );
 }
