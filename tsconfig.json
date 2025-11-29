@@ -34,7 +34,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "../kambaz-node-server-app/Kambaz/Courses/dao.js"
-, "../kambaz-node-server-app/Kambaz/Database/index.js"  ],
+, "../kambaz-node-server-app/Kambaz/Database/index.js", "app/(kambaz)/Courses/Assignments/dao.js"  ],
   "exclude": [
     "node_modules"
   ]

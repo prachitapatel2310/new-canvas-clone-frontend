@@ -3,8 +3,8 @@ import axios from "axios";
 const axiosWithCredentials = axios.create({ withCredentials: true });
 const HTTP_SERVER = process.env.NEXT_PUBLIC_HTTP_SERVER;
 const USERS_API = `${HTTP_SERVER}/api/users`;
-const MODULES_API = `${HTTP_SERVER}/api/modules`;
 const COURSES_API = `${HTTP_SERVER}/api/courses`;
+// const MODULES_API = `${HTTP_SERVER}/api/modules`; // Not needed anymore for single module CRUD
 
 // FIX: All requests must use axiosWithCredentials to send cookies
 export const fetchAllCourses = async () => {
@@ -40,9 +40,21 @@ export const createModuleForCourse = async (courseId: string, module: any) => {
   return response.data;
 };
 
-export const updateModule = async (module: any) => {
-  const { data } = await axiosWithCredentials.put(`${MODULES_API}/${module._id}`, module);
+// REFACTORED: Accepts courseId, uses new embedded route
+export const updateModule = async (courseId: string, module: any) => {
+  const { data } = await axiosWithCredentials.put(
+    `${COURSES_API}/${courseId}/modules/${module._id}`, // NEW PATH
+    module
+  );
   return data;
+};
+
+// REFACTORED: New delete function accepting both IDs, uses new embedded route
+export const deleteModule = async (courseId: string, moduleId: string) => {
+  const response = await axiosWithCredentials.delete(
+    `${COURSES_API}/${courseId}/modules/${moduleId}` // NEW PATH
+  );
+  return response.data;
 };
 
 export const createCourse = async (course: any) => {
@@ -51,4 +63,21 @@ export const createCourse = async (course: any) => {
     course
   );
   return data;
+};
+
+// NEW: Enrollment functions (6.4.3.4)
+export const enrollIntoCourse = async (userId: string, courseId: string) => {
+  const response = await axiosWithCredentials.post(`${USERS_API}/${userId}/courses/${courseId}`);
+  return response.data;
+};
+
+export const unenrollFromCourse = async (userId: string, courseId: string) => {
+  const response = await axiosWithCredentials.delete(`${USERS_API}/${userId}/courses/${courseId}`);
+  return response.data;
+};
+
+// NEW: Find users enrolled in a course (6.4.3.5)
+export const findUsersForCourse = async (courseId: string) => {
+  const response = await axiosWithCredentials.get(`${COURSES_API}/${courseId}/users`);
+  return response.data;
 };

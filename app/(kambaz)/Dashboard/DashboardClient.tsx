@@ -339,51 +339,49 @@ export default function DashboardClient() {
     }
   }, [currentUser, router]);
 
-  // ✅ UPDATED: Immediate enroll with optimistic update
+  // UPDATED: Call the new Courses client enrollment function
   const handleEnroll = async (courseId: string) => {
     if (!currentUser) return;
     try {
-      // Immediately update Redux state (optimistic update)
+      // Optimistic update
       const updatedCourses = courses.map((c: any) =>
         c._id === courseId ? { ...c, isEnrolled: true } : c
       );
       dispatch(setCourses(updatedCourses));
       
-      // Then call API
-      await accountClient.enrollUserInCourse(currentUser._id, courseId);
+      // Call API using the new client function
+      await client.enrollIntoCourse(currentUser._id, courseId);
       dispatch(enrollUser({ user: currentUser._id, course: courseId }));
-      console.log("✅ Enrolled in course:", courseId);
     } catch (err) {
-      console.error("Failed to enroll:", err);
       // Revert on error
       const revertedCourses = courses.map((c: any) =>
         c._id === courseId ? { ...c, isEnrolled: false } : c
       );
       dispatch(setCourses(revertedCourses));
+      console.error("Failed to enroll:", err);
     }
   };
 
-  // ✅ UPDATED: Immediate unenroll with optimistic update
+// UPDATED: Call the new Courses client unenrollment function
   const handleUnenroll = async (courseId: string) => {
     if (!currentUser) return;
     try {
-      // Immediately update Redux state (optimistic update)
+      // Optimistic update
       const updatedCourses = courses.map((c: any) =>
         c._id === courseId ? { ...c, isEnrolled: false } : c
       );
       dispatch(setCourses(updatedCourses));
       
-      // Then call API
-      await accountClient.unenrollUserFromCourse(currentUser._id, courseId);
+      // Call API using the new client function
+      await client.unenrollFromCourse(currentUser._id, courseId);
       dispatch(unenrollUser({ user: currentUser._id, course: courseId }));
-      console.log("✅ Unenrolled from course:", courseId);
     } catch (err) {
-      console.error("Failed to unenroll:", err);
       // Revert on error
       const revertedCourses = courses.map((c: any) =>
         c._id === courseId ? { ...c, isEnrolled: true } : c
       );
       dispatch(setCourses(revertedCourses));
+      console.error("Failed to unenroll:", err);
     }
   };
 
