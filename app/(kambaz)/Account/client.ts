@@ -50,3 +50,24 @@ export const unenrollUserFromCourse = async (
   );
   return response.data;
 };
+export const findAllUsers = async () => {
+    // Sends GET request to http://localhost:4000/api/users (or wherever HTTP_SERVER points)
+    const response = await axiosWithCredentials.get(USERS_API); 
+    return response.data; // response.data holds the array of users
+};
+// Finds users filtered by exact role match
+export const findUsersByRole = async (role: string) => {
+  const response = await axiosWithCredentials.get(`${USERS_API}?role=${role}`);
+  return response.data;
+};
+
+// Finds users filtered by partial name match
+export const findUsersByPartialName = async (name: string) => {
+  const response = await axiosWithCredentials.get(`${USERS_API}?name=${name}`);
+  return response.data;
+};
+
+export const findUserById = async (id: string) => {
+  const response = await axios.get(`${USERS_API}/${id}`);
+  return response.data;
+};
