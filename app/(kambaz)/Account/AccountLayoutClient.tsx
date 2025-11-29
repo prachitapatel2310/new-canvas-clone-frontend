@@ -6,14 +6,9 @@ import KambazNavigation from "../Navigation";
 import AccountNavigation from "./Navigation";
 
 export default function AccountLayoutClient({ children }: Readonly<{ children: ReactNode }>) {
+  // Removed pathname and getActivePage logic as AccountNavigation handles this internally.
   const pathname = usePathname();
-
-  const getActivePage = () => {
-    if (pathname.includes("/Signin")) return "Signin";
-    if (pathname.includes("/Signup")) return "Signup";
-    if (pathname.includes("/Profile")) return "Profile";
-    return "Signin";
-  };
+  // Removed const getActivePage = () => { ... } as it is no longer needed.
 
   return (
     <div className="d-flex">
@@ -27,7 +22,8 @@ export default function AccountLayoutClient({ children }: Readonly<{ children: R
       
       {/* Keep the content area but adjust margin for sidebar */}
       <div className="flex-fill p-4" style={{ marginLeft: "110px" }}>
-        <AccountNavigation activePage={getActivePage()} />
+        {/* FIX: Removed activePage={getActivePage()} prop */}
+        <AccountNavigation /> 
         {children}
       </div>
     </div>
