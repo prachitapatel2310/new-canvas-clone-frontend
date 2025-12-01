@@ -1,3 +1,87 @@
+// "use client";
+
+// import Link from "next/link";
+// import { usePathname } from "next/navigation";
+// import { useSelector } from "react-redux";
+// import type { RootState } from "../store";
+
+// export default function AccountNavigation() {
+//   const { currentUser } = useSelector((state: RootState) => state.accountReducer);
+//   const pathname = usePathname() ?? "";
+
+//   const baseLinks = currentUser ? ["Profile"] : ["Signin", "Signup"];
+  
+//   if (currentUser && currentUser.role === "ADMIN") {
+//     baseLinks.push("Users");
+//   }
+
+//   // 👇 CRITICAL FIX: The logic is adjusted for class precedence.
+//   const getItemClass = (page: string) => {
+//     const name = page.toLowerCase();
+//     const isActive = pathname.endsWith(`/${name}`);
+    
+//     // Determine the base class for text color
+//     const textColorClass = isActive ? "text-black" : "text-danger";
+
+//     // Determine the active styling classes
+//     const activeClasses = isActive 
+//       ? "wd-active border-start border-4 border-black" 
+//       : "";
+
+//     // Combine all classes
+//     return `list-group-item border-0 ${textColorClass} ${activeClasses}`;
+//   };
+
+//   return (
+//     <div className="wd list-group fs-5 rounded-0 p-0 m-0" style={{ width: 140, marginLeft: 0, paddingLeft: 0 }}>
+      
+//       {/* Signin Link */}
+//       {baseLinks.includes("Signin") && (
+//         <Link 
+//           href="/Account/Signin" 
+//           id="wd-account-signin-link" 
+//           className={getItemClass("Signin")}
+//         >
+//           <h5>Signin</h5>
+//         </Link>
+//       )}
+
+//       {/* Signup Link */}
+//       {baseLinks.includes("Signup") && (
+//         <Link 
+//           href="/Account/Signup" 
+//           id="wd-account-signup-link" 
+//           className={getItemClass("Signup")}
+//         >
+//           <h5>Signup</h5>
+//         </Link>
+//       )}
+
+//       {/* Profile Link */}
+//       {baseLinks.includes("Profile") && (
+//         <Link 
+//           href="/Account/Profile" 
+//           id="wd-account-profile-link" 
+//           className={getItemClass("Profile")}
+//         >
+//           <h5>Profile</h5>
+//         </Link>
+//       )}
+
+//       {/* Users Link (Admin Only) */}
+//       {baseLinks.includes("Users") && (
+//         <Link 
+//           href="/Account/Users" 
+//           id="wd-account-users-link" 
+//           className={getItemClass("Users")}
+//         >
+//           <h5>Users</h5>
+//         </Link>
+//       )}
+//     </div>
+//   );
+// }
+
 "use client";
 
 import Link from "next/link";
@@ -15,67 +99,72 @@ export default function AccountNavigation() {
     baseLinks.push("Users");
   }
 
-  // 👇 CRITICAL FIX: The logic is adjusted for class precedence.
-  const getItemClass = (page: string) => {
-    const name = page.toLowerCase();
-    const isActive = pathname.endsWith(`/${name}`);
-    
-    // Determine the base class for text color
-    const textColorClass = isActive ? "text-black" : "text-danger";
-
-    // Determine the active styling classes
-    const activeClasses = isActive 
-      ? "wd-active border-start border-4 border-black" 
-      : "";
-
-    // Combine all classes
-    return `list-group-item border-0 ${textColorClass} ${activeClasses}`;
-  };
-
   return (
-    <div className="wd list-group fs-5 rounded-0">
-      
+    <div
+      className="wd list-group fs-5 rounded-0 p-0 m-0"
+      style={{ width: 140, marginLeft: 0, paddingLeft: 0 }}
+    >
       {/* Signin Link */}
       {baseLinks.includes("Signin") && (
-        <Link 
-          href="/Account/Signin" 
-          id="wd-account-signin-link" 
-          className={getItemClass("Signin")}
+        <Link
+          href="/Account/Signin"
+          id="wd-account-signin-link"
+          className={`list-group-item border-0 ps-0 pe-0 ms-0 me-0 ${
+            pathname.startsWith("/Account/Signin")
+              ? "wd-active text-black border-start border-4 border-black"
+              : "text-danger"
+          }`}
+          style={{ paddingLeft: 0, marginLeft: 0 }}
         >
-          <h5>Signin</h5>
+          Signin
         </Link>
       )}
 
       {/* Signup Link */}
       {baseLinks.includes("Signup") && (
-        <Link 
-          href="/Account/Signup" 
-          id="wd-account-signup-link" 
-          className={getItemClass("Signup")}
+        <Link
+          href="/Account/Signup"
+          id="wd-account-signup-link"
+          className={`list-group-item border-0 ps-0 pe-0 ms-0 me-0 ${
+            pathname.startsWith("/Account/Signup")
+              ? "wd-active text-black border-start border-4 border-black"
+              : "text-danger"
+          }`}
+          style={{ paddingLeft: 0, marginLeft: 0 }}
         >
-          <h5>Signup</h5>
+          Signup
         </Link>
       )}
 
       {/* Profile Link */}
       {baseLinks.includes("Profile") && (
-        <Link 
-          href="/Account/Profile" 
-          id="wd-account-profile-link" 
-          className={getItemClass("Profile")}
+        <Link
+          href="/Account/Profile"
+          id="wd-account-profile-link"
+          className={`list-group-item border-0 ps-0 pe-0 ms-0 me-0 ${
+            pathname.startsWith("/Account/Profile")
+              ? "wd-active text-black border-start border-4 border-black"
+              : "text-danger"
+          }`}
+          style={{ paddingLeft: 0, marginLeft: 0 }}
         >
-          <h5>Profile</h5>
+          Profile
         </Link>
       )}
 
       {/* Users Link (Admin Only) */}
       {baseLinks.includes("Users") && (
-        <Link 
-          href="/Account/Users" 
-          id="wd-account-users-link" 
-          className={getItemClass("Users")}
+        <Link
+          href="/Account/Users"
+          id="wd-account-users-link"
+          className={`list-group-item border-0 ps-0 pe-0 ms-0 me-0 ${
+            pathname.startsWith("/Account/Users")
+              ? "wd-active text-black border-start border-4 border-black"
+              : "text-danger"
+          }`}
+          style={{ paddingLeft: 0, marginLeft: 0 }}
         >
-          <h5>Users</h5>
+          Users
         </Link>
       )}
     </div>
