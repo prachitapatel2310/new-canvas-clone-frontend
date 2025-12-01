@@ -79,7 +79,15 @@ export default function SigninClient() {
           <br />
           password: pass890
           <br />
-          role: professor
+          role: instructor
+        </p>
+
+        <p>
+          username: vishwa001
+          <br />
+          password: pass001
+          <br />
+          role: admin
         </p>
       </div>
     </div>
