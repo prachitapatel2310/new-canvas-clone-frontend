@@ -1,17 +1,11 @@
+export const dynamic = "force-dynamic";
 
-import { use } from 'react';
+import QuizListClient from "./QuizListClient";
 
-export default function Quizzes({ params }: { params: Promise<{ cid: string }> }) {
-  const { cid } = use(params);
-  
+export default function Page() {
   return (
     <div id="wd-quizzes">
-      <h2>Quizzes</h2>
-      <hr />
-      <div className="alert alert-warning" role="alert">
-        <h3>Quizzes Integration Coming Soon!</h3>
-        <p className="mb-0">This feature will be available in a future update.</p>
-      </div>
+      <QuizListClient />
     </div>
   );
 }

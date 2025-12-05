@@ -4,6 +4,7 @@ import modulesReducer from "./Courses/[cid]/Modules/reducer";
 import accountReducer from "./Account/reducer";
 import assignmentsReducer from "./Courses/Assignments/reducer";
 import enrollmentsReducer from "./Courses/Enrollments/reducer";
+import quizzesReducer from "./Courses/[cid]/Quizzes/reducer";
 // Factory to create a fresh store instance
 export const makeStore = () => {
   return configureStore({
@@ -13,6 +14,7 @@ export const makeStore = () => {
       accountReducer,
       assignmentsReducer,
       enrollmentsReducer,
+      quizzesReducer,
     },
   });
 };
