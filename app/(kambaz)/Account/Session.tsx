@@ -122,7 +122,7 @@ export default function Session({ children }: { children: any }) {
   if (pending) {
     return (
       <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
-        <div>Loading...</div>
+        <div>Loading..</div>
       </div>
     );
   }
