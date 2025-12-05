@@ -1,4 +1,3 @@
-// app/Courses/[cid]/Quizzes/[qid]/take/QuizTake.tsx
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
@@ -89,19 +88,26 @@ export default function QuizTake() {
     }));
   };
 
+  /**
+   * Checks if the user's answer is correct based on the new schema structure.
+   */
   const checkAnswer = (question: QuizQuestion, userAnswer: any): boolean => {
     if (!userAnswer && userAnswer !== false) return false;
 
-    switch (question.type) {
+    // NOTE: Use question.questionType
+    switch (question.questionType) {
       case 'MULTIPLE_CHOICE':
-        const correctChoice = question.choices?.find(c => c.isCorrect);
-        return correctChoice?.text === userAnswer;
+        // The correct answer is a single string matching one of the choices
+        return question.correctAnswer === userAnswer;
       
       case 'TRUE_FALSE':
-        return String(question.correctAnswer) === String(userAnswer);
+        // question.correctAnswer is a string: "True"/"False"
+        // userAnswer is a string: "true"/"false"
+        return String(question.correctAnswer).toLowerCase() === String(userAnswer).toLowerCase();
       
       case 'FILL_IN_THE_BLANK':
         if (Array.isArray(question.correctAnswers)) {
+          // Check if the user's answer matches any correct answer (case-insensitive)
           return question.correctAnswers.some(
             ans => ans.toLowerCase() === String(userAnswer).toLowerCase()
           );
@@ -112,6 +118,7 @@ export default function QuizTake() {
         return false;
     }
   };
+
 
   const handleSubmit = () => {
     if (submitted) return;
@@ -169,6 +176,15 @@ export default function QuizTake() {
   const QuestionRenderer = ({ q, showResult = false }: { q: QuizQuestion; showResult?: boolean }) => {
     const userAnswer = answers[q._id];
     const isCorrect = showResult && checkAnswer(q, userAnswer);
+    const questionType = q.questionType;
+
+    // Determine if we should show the correct answer feedback
+    const shouldShowCorrectAnswer = showResult && (
+      localQuiz.showCorrectAnswers === "IMMEDIATELY" || 
+      (localQuiz.showCorrectAnswers === "AFTER_LAST_ATTEMPT" && submitted) || 
+      localQuiz.showCorrectAnswers === "NEVER"
+    );
+
 
     return (
       <Card className={`mb-4 ${showResult ? (isCorrect ? 'border-success' : 'border-danger') : ''}`}>
@@ -186,45 +202,49 @@ export default function QuizTake() {
         <Card.Body>
           <p>{q.questionText}</p>
           <Form>
-            {q.type === 'MULTIPLE_CHOICE' && q.choices && (
+            {questionType === 'MULTIPLE_CHOICE' && q.choices && (
               <div>
-                {q.choices.map((choice, idx) => (
-                  <Form.Check 
-                    key={idx}
-                    type="radio" 
-                    label={choice.text} 
-                    name={`q-${q._id}`} 
-                    value={choice.text}
-                    checked={userAnswer === choice.text}
-                    onChange={() => handleAnswerChange(q._id, choice.text)}
-                    disabled={submitted}
-                    className={showResult && choice.isCorrect ? 'text-success fw-bold' : ''}
-                  />
-                ))}
+                {/* q.choices is now a string array */}
+                {q.choices.map((choiceText, idx) => {
+                  const isCorrectChoice = showResult && choiceText === q.correctAnswer;
+                  return (
+                    <Form.Check 
+                      key={idx}
+                      type="radio" 
+                      label={choiceText} 
+                      name={`q-${q._id}`} 
+                      value={choiceText}
+                      checked={userAnswer === choiceText}
+                      onChange={() => handleAnswerChange(q._id, choiceText)}
+                      disabled={submitted}
+                      className={shouldShowCorrectAnswer && isCorrectChoice ? 'text-success fw-bold' : ''}
+                    />
+                  );
+                })}
               </div>
             )}
 
-            {q.type === 'TRUE_FALSE' && (
+            {questionType === 'TRUE_FALSE' && (
               <div>
-                <Form.Check 
-                  type="radio" 
-                  label="True" 
-                  name={`q-${q._id}`} 
-                  value="true" 
-                  checked={userAnswer === "true"}
-                  onChange={() => handleAnswerChange(q._id, "true")}
-                  disabled={submitted}
-                />
-                <Form.Check 
-                  type="radio" 
-                  label="False" 
-                  name={`q-${q._id}`} 
-                  value="false" 
-                  checked={userAnswer === "false"}
-                  onChange={() => handleAnswerChange(q._id, "false")}
-                  disabled={submitted}
-                />
-                {showResult && (
+                {["True", "False"].map((value, idx) => {
+                  const valueString = value.toLowerCase();
+                  const isCorrectOption = showResult && q.correctAnswer === value;
+                  return (
+                    <Form.Check 
+                      key={idx}
+                      type="radio" 
+                      label={value} 
+                      name={`q-${q._id}`} 
+                      value={valueString} 
+                      checked={userAnswer === valueString}
+                      onChange={() => handleAnswerChange(q._id, valueString)}
+                      disabled={submitted}
+                      className={shouldShowCorrectAnswer && isCorrectOption ? 'text-success fw-bold' : ''}
+                    />
+                  );
+                })}
+
+                {showResult && shouldShowCorrectAnswer && (
                   <p className="text-success mt-2">
                     Correct Answer: {String(q.correctAnswer)}
                   </p>
@@ -232,7 +252,7 @@ export default function QuizTake() {
               </div>
             )}
 
-            {q.type === 'FILL_IN_THE_BLANK' && (
+            {questionType === 'FILL_IN_THE_BLANK' && (
               <div>
                 <Form.Control 
                   type="text"
@@ -241,7 +261,7 @@ export default function QuizTake() {
                   disabled={submitted}
                   placeholder="Type your answer here"
                 />
-                {showResult && (
+                {showResult && shouldShowCorrectAnswer && (
                   <div className="mt-2">
                     <p className="text-success mb-0">
                       Correct Answers: {q.correctAnswers?.join(', ')}
@@ -307,7 +327,8 @@ export default function QuizTake() {
           <strong>Total Points:</strong> {localQuiz.points}
         </ListGroup.Item>
         <ListGroup.Item>
-          <strong>Attempts Allowed:</strong> {localQuiz.attemptsAllowed}
+          {/* NOTE: Use schema-aligned field name `howManyAttempts` */}
+          <strong>Attempts Allowed:</strong> {localQuiz.howManyAttempts}
         </ListGroup.Item>
       </ListGroup>
 

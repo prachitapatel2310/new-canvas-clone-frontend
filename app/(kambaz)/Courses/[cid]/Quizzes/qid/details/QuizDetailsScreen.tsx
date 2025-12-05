@@ -1,4 +1,3 @@
-// app/Courses/[cid]/Quizzes/[qid]/details/QuizDetailsScreen.tsx
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
@@ -52,8 +51,9 @@ export default function QuizDetailsScreen() {
     return <div className="p-4">Loading quiz details...</div>;
   }
 
-  const { status, message } = getAvailability(localQuiz.available, localQuiz.until);
-  const canTakeQuiz = isStudent && localQuiz.published && status === 'Available';
+  // NOTE: Updated fields to match schema: availableDate, untilDate, isPublished
+  const { status, message } = getAvailability(localQuiz.availableDate, localQuiz.untilDate);
+  const canTakeQuiz = isStudent && localQuiz.isPublished && status === 'Available';
 
   const renderFacultyView = () => (
     <>
@@ -80,14 +80,19 @@ export default function QuizDetailsScreen() {
           <ListGroup.Item><strong>Shuffle Answers:</strong> {localQuiz.shuffleAnswers ? 'Yes' : 'No'}</ListGroup.Item>
           <ListGroup.Item><strong>Time Limit:</strong> {localQuiz.timeLimit} Minutes</ListGroup.Item>
           <ListGroup.Item><strong>Multiple Attempts:</strong> {localQuiz.multipleAttempts ? 'Yes' : 'No'}</ListGroup.Item>
+          {/* Updated from attemptsAllowed */}
+          <ListGroup.Item><strong>Attempts Allowed:</strong> {localQuiz.howManyAttempts}</ListGroup.Item>
           <ListGroup.Item><strong>Show Correct Answers:</strong> {localQuiz.showCorrectAnswers.replace('_', ' ')}</ListGroup.Item>
           <ListGroup.Item><strong>Access Code:</strong> {localQuiz.accessCode || 'None'}</ListGroup.Item>
           <ListGroup.Item><strong>One Question at a Time:</strong> {localQuiz.oneQuestionAtATime ? 'Yes' : 'No'}</ListGroup.Item>
           <ListGroup.Item><strong>Webcam Required:</strong> {localQuiz.webcamRequired ? 'Yes' : 'No'}</ListGroup.Item>
           <ListGroup.Item><strong>Lock Questions After Answering:</strong> {localQuiz.lockQuestionsAfterAnswering ? 'Yes' : 'No'}</ListGroup.Item>
-          <ListGroup.Item><strong>Due Date:</strong> {localQuiz.due}</ListGroup.Item>
-          <ListGroup.Item><strong>Available Date:</strong> {localQuiz.available}</ListGroup.Item>
-          <ListGroup.Item><strong>Until Date:</strong> {localQuiz.until}</ListGroup.Item>
+          {/* Updated from due, available, until */}
+          <ListGroup.Item><strong>Due Date:</strong> {localQuiz.dueDate}</ListGroup.Item>
+          <ListGroup.Item><strong>Available Date:</strong> {localQuiz.availableDate}</ListGroup.Item>
+          <ListGroup.Item><strong>Until Date:</strong> {localQuiz.untilDate}</ListGroup.Item>
+          {/* Updated from published */}
+          <ListGroup.Item><strong>Published:</strong> {localQuiz.isPublished ? 'Yes' : 'No'}</ListGroup.Item>
         </ListGroup>
       </Card>
     </>
@@ -102,8 +107,10 @@ export default function QuizDetailsScreen() {
         <ListGroup.Item><strong>Points:</strong> {localQuiz.points}</ListGroup.Item>
         <ListGroup.Item><strong>Questions:</strong> {localQuiz.questions.length}</ListGroup.Item>
         <ListGroup.Item><strong>Time Limit:</strong> {localQuiz.timeLimit} Minutes</ListGroup.Item>
-        <ListGroup.Item><strong>Attempts:</strong> {localQuiz.attemptsAllowed}</ListGroup.Item>
-        <ListGroup.Item><strong>Due:</strong> {localQuiz.due}</ListGroup.Item>
+        {/* Updated from attemptsAllowed */}
+        <ListGroup.Item><strong>Attempts:</strong> {localQuiz.howManyAttempts}</ListGroup.Item>
+        {/* Updated from due */}
+        <ListGroup.Item><strong>Due:</strong> {localQuiz.dueDate}</ListGroup.Item>
       </ListGroup>
       <div className="mt-4">
         {canTakeQuiz ? (

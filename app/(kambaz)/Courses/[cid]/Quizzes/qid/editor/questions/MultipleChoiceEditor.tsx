@@ -1,7 +1,6 @@
-// app/Courses/[cid]/Quizzes/[qid]/editor/questions/MultipleChoiceEditor.tsx
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Form, Button, Card, ListGroup } from "react-bootstrap";
 import { QuizQuestion } from "../../../../Quizzes/reducer";
 import { FaTrash, FaPlus } from "react-icons/fa";
@@ -12,43 +11,81 @@ interface Props {
   onCancel: () => void;
 }
 
+// Helper to convert the simple schema (string array + single correct string) 
+// to a format easier for the UI to manage (object array)
+const schemaToEditorFormat = (q: QuizQuestion) => {
+  const choices = q.choices || [];
+  const correctAnswer = q.correctAnswer || "";
+
+  return choices.map(text => ({
+    text: text,
+    isCorrect: text === correctAnswer
+  }));
+};
+
+// Helper to convert the editor format back to the simple schema
+const editorToSchemaFormat = (qData: QuizQuestion, editorChoices: { text: string; isCorrect: boolean }[]) => {
+  const choices = editorChoices.map(c => c.text);
+  const correctAnswer = editorChoices.find(c => c.isCorrect)?.text || "";
+
+  return {
+    ...qData,
+    choices: choices,
+    correctAnswer: correctAnswer,
+  };
+};
+
+
 export default function MultipleChoiceEditor({ question, onSave, onCancel }: Props) {
+  // Use the canonical question structure for saving
   const [qData, setQData] = useState<QuizQuestion>(question);
+  
+  // Use a local state derived from qData for complex list editing in the UI
+  const [editorChoices, setEditorChoices] = useState(() => schemaToEditorFormat(question));
+
 
   const handleAddChoice = () => {
-    setQData({
-      ...qData,
-      choices: [
-        ...(qData.choices || []),
-        { text: `Choice ${(qData.choices?.length || 0) + 1}`, isCorrect: false },
-      ],
-    });
+    setEditorChoices([
+      ...editorChoices,
+      { text: `Choice ${(editorChoices.length || 0) + 1}`, isCorrect: false },
+    ]);
   };
 
   const handleChoiceChange = (index: number, newText: string) => {
-    const updatedChoices = qData.choices?.map((choice, i) =>
+    const updatedChoices = editorChoices.map((choice, i) =>
       i === index ? { ...choice, text: newText } : choice
     );
-    setQData({ ...qData, choices: updatedChoices });
+    setEditorChoices(updatedChoices);
   };
 
   const handleCorrectChange = (index: number) => {
-    const updatedChoices = qData.choices?.map((choice, i) => ({
+    // Only set one choice as correct
+    const updatedChoices = editorChoices.map((choice, i) => ({
       ...choice,
       isCorrect: i === index,
     }));
-    setQData({ ...qData, choices: updatedChoices });
+    setEditorChoices(updatedChoices);
   };
 
   const handleRemoveChoice = (index: number) => {
-    if (qData.choices && qData.choices.length <= 2) {
-      alert("Must have at least 2 choices");
+    if (editorChoices.length <= 2) {
+      alert("Multiple Choice questions must have at least 2 choices.");
       return;
     }
-    setQData({
-      ...qData,
-      choices: qData.choices?.filter((_, i) => i !== index),
-    });
+    setEditorChoices(editorChoices.filter((_, i) => i !== index));
+  };
+  
+  const handleSave = () => {
+    // Convert the editor state back to the schema format before saving
+    const savedQuestion = editorToSchemaFormat(qData, editorChoices);
+    
+    // Perform minimal validation: ensure at least one correct answer is selected
+    if (!savedQuestion.correctAnswer) {
+      alert("Please select a correct answer before saving.");
+      return;
+    }
+    
+    onSave(savedQuestion);
   };
 
   return (
@@ -66,6 +103,7 @@ export default function MultipleChoiceEditor({ question, onSave, onCancel }: Pro
         <Form.Control
           type="number"
           value={qData.points}
+          // Ensure points update is reflected in the canonical state (qData)
           onChange={(e) => setQData({ ...qData, points: Number(e.target.value) })}
           min={1}
         />
@@ -77,13 +115,14 @@ export default function MultipleChoiceEditor({ question, onSave, onCancel }: Pro
           as="textarea"
           rows={3}
           value={qData.questionText}
+          // Ensure question text update is reflected in the canonical state (qData)
           onChange={(e) => setQData({ ...qData, questionText: e.target.value })}
         />
       </Form.Group>
       
       <Form.Label>Choices</Form.Label>
       <ListGroup className="mb-3">
-        {qData.choices?.map((choice, index) => (
+        {editorChoices.map((choice, index) => (
           <ListGroup.Item key={index} className="d-flex align-items-center">
             <Form.Check
               type="radio"
@@ -110,7 +149,7 @@ export default function MultipleChoiceEditor({ question, onSave, onCancel }: Pro
 
       <div className="d-flex justify-content-end gap-2">
         <Button variant="secondary" onClick={onCancel}>Cancel</Button>
-        <Button variant="primary" onClick={() => onSave(qData)}>Update Question</Button>
+        <Button variant="primary" onClick={handleSave}>Update Question</Button>
       </div>
     </Card>
   );

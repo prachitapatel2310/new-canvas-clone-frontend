@@ -19,15 +19,21 @@ import { useQuizEditor } from "../QuizEditorContext";
 const defaultQuestionFactory = (type: QuestionType): QuizQuestion => ({
   _id: uuidv4(),
   title: `New ${type.replace(/_/g, ' ')} Question`,
-  type: type,
+  // --- UPDATED: Use schema name `questionType` ---
+  questionType: type, 
   points: 10,
   questionText: "",
+  // --- UPDATED: Use schema structure (string array for choices, string for answer) ---
   choices: type === 'MULTIPLE_CHOICE' ? [
-    { text: "Choice 1", isCorrect: true }, 
-    { text: "Choice 2", isCorrect: false }
+    "Choice 1 (Correct)", 
+    "Choice 2",
+    "Choice 3",
   ] : undefined,
-  correctAnswer: type === 'TRUE_FALSE' ? true : undefined,
+  // Single string for correct answer (either the choice text or "True"/"False")
+  correctAnswer: type === 'MULTIPLE_CHOICE' ? "Choice 1 (Correct)" : 
+                 (type === 'TRUE_FALSE' ? "True" : undefined),
   correctAnswers: type === 'FILL_IN_THE_BLANK' ? ["answer"] : undefined,
+  // --- END UPDATED ---
 });
 
 export default function QuizQuestionsEditor() {
@@ -107,8 +113,10 @@ export default function QuizQuestionsEditor() {
         questions: questions,
         points: questions.reduce((sum, q) => sum + q.points, 0),
         numQuestions: questions.length,
-        published: publish,
-      };
+        // --- UPDATED: Use schema name `isPublished` ---
+        isPublished: publish,
+        // --- END UPDATED ---
+      } as Quiz;
       
       try {
         const savedQuiz = await client.updateQuiz(updatedQuiz);
@@ -132,24 +140,34 @@ export default function QuizQuestionsEditor() {
     if (!isEditing) {
       return (
         <div className="p-3">
-          <p><strong>Type:</strong> {q.type.replace(/_/g, ' ')}</p>
+          {/* --- UPDATED: Use schema name `questionType` --- */}
+          <p><strong>Type:</strong> {q.questionType.replace(/_/g, ' ')}</p>
           <p><strong>Question:</strong> {q.questionText || <em>No question text</em>}</p>
-          {q.type === 'MULTIPLE_CHOICE' && (
+          {q.questionType === 'MULTIPLE_CHOICE' && (
             <div>
               <strong>Choices:</strong>
               <ul>
+                {/* --- UPDATED: Read choices from the string array and compare with correctAnswer string --- */}
                 {q.choices?.map((c, i) => (
-                  <li key={i} className={c.isCorrect ? 'text-success' : ''}>
-                    {c.text} {c.isCorrect && '✓'}
+                  <li 
+                    key={i} 
+                    className={q.correctAnswer === c ? 'text-success' : ''}
+                  >
+                    {c} {q.correctAnswer === c && '✓'}
                   </li>
                 ))}
+                {/* --- END UPDATED --- */}
               </ul>
+              <p className="mt-2">
+                <strong>Correct Choice:</strong> {q.correctAnswer || <em>None set</em>}
+              </p>
             </div>
           )}
-          {q.type === 'TRUE_FALSE' && (
-            <p><strong>Correct Answer:</strong> {String(q.correctAnswer)}</p>
+          {q.questionType === 'TRUE_FALSE' && (
+            // The correct answer is stored as a string ("True" or "False")
+            <p><strong>Correct Answer:</strong> {q.correctAnswer}</p>
           )}
-          {q.type === 'FILL_IN_THE_BLANK' && (
+          {q.questionType === 'FILL_IN_THE_BLANK' && (
             <p><strong>Correct Answers:</strong> {q.correctAnswers?.join(', ')}</p>
           )}
         </div>
@@ -157,9 +175,11 @@ export default function QuizQuestionsEditor() {
     }
 
     const EditorComponent = 
-      q.type === 'MULTIPLE_CHOICE' ? MultipleChoiceEditor :
-      q.type === 'TRUE_FALSE' ? TrueFalseEditor :
-      q.type === 'FILL_IN_THE_BLANK' ? FillBlankEditor : null;
+      // --- UPDATED: Use schema name `questionType` ---
+      q.questionType === 'MULTIPLE_CHOICE' ? MultipleChoiceEditor :
+      q.questionType === 'TRUE_FALSE' ? TrueFalseEditor :
+      q.questionType === 'FILL_IN_THE_BLANK' ? FillBlankEditor : null;
+      // --- END UPDATED ---
 
     if (!EditorComponent) return <p>Unknown question type</p>;
 

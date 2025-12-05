@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 type AccountState = {
   currentUser: any | null;
 };

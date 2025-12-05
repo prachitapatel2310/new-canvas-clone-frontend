@@ -1,4 +1,3 @@
-// app/Courses/[cid]/Quizzes/[qid]/editor/details/QuizDetailsEditor.tsx
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
@@ -22,28 +21,32 @@ export default function QuizDetailsEditor() {
     title: "", 
     description: "", 
     quizType: "GRADED_QUIZ",
-    assignmentGroup: "Quizzes",
+    // --- UPDATED FIELD NAMES START ---
+    assignmentGroup: "QUIZZES", // Changed to match schema enum
     points: 0,
     shuffleAnswers: true,
     timeLimit: 20,
     multipleAttempts: false,
-    attemptsAllowed: 1,
+    howManyAttempts: 1, // Renamed from attemptsAllowed (using schema name)
     showCorrectAnswers: "IMMEDIATELY",
     accessCode: "",
     oneQuestionAtATime: true,
     webcamRequired: false,
     lockQuestionsAfterAnswering: false,
-    due: "",
-    available: "",
-    until: "",
+    dueDate: "", // Renamed from due
+    availableDate: "", // Renamed from available
+    untilDate: "", // Renamed from until
+    // --- UPDATED FIELD NAMES END ---
   });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchQuiz = async () => {
       if (!qid || qid === 'new') return;
+      setLoading(true); // Ensure loading is set before fetch
       try {
         const fetchedQuiz = await client.findQuizById(qid);
+        // Direct assignment works because fetchedQuiz uses schema names, which are now in quizData state
         setQuizData(fetchedQuiz);
       } catch (error) {
         console.error("Error fetching quiz for editor:", error);
@@ -67,13 +70,17 @@ export default function QuizDetailsEditor() {
         alert("Quiz title is required.");
         return null;
       }
+
+      // Check if assignmentGroup is set correctly (must be uppercase)
+      const assignmentGroup = quizData.assignmentGroup?.toUpperCase() as Quiz["assignmentGroup"];
       
       const finalQuizData: Quiz = {
         ...initialQuiz,
         ...quizData,
         _id: qid,
         course: cid,
-        published: publish,
+        isPublished: publish, 
+        assignmentGroup: assignmentGroup, // Ensure it's uppercase for the API call
       } as Quiz;
 
       try {
@@ -81,6 +88,7 @@ export default function QuizDetailsEditor() {
         if (initialQuiz) {
           savedQuiz = await client.updateQuiz(finalQuizData);
         } else {
+          // This creates the quiz on the backend and returns the document with the real _id
           savedQuiz = await client.createQuizForCourse(cid, finalQuizData);
           router.replace(`/Courses/${cid}/Quizzes/${savedQuiz._id}/editor/details`);
         }
@@ -140,10 +148,11 @@ export default function QuizDetailsEditor() {
                 value={quizData.assignmentGroup} 
                 onChange={(e) => setQuizData({ ...quizData, assignmentGroup: e.target.value as Quiz["assignmentGroup"] })}
               >
-                <option value="Quizzes">Quizzes</option>
-                <option value="Exams">Exams</option>
-                <option value="Assignments">Assignments</option>
-                <option value="Project">Project</option>
+                {/* Ensure option values are uppercase strings, matching the schema/reducer enum */}
+                <option value="QUIZZES">Quizzes</option>
+                <option value="EXAMS">Exams</option>
+                <option value="ASSIGNMENTS">Assignments</option>
+                <option value="PROJECT">Project</option>
               </Form.Select>
             </Form.Group>
           </Col>
@@ -179,8 +188,8 @@ export default function QuizDetailsEditor() {
               <Form.Label>How Many Attempts</Form.Label>
               <Form.Control 
                 type="number" 
-                value={quizData.attemptsAllowed} 
-                onChange={(e) => setQuizData({ ...quizData, attemptsAllowed: Number(e.target.value) })}
+                value={quizData.howManyAttempts} 
+                onChange={(e) => setQuizData({ ...quizData, howManyAttempts: Number(e.target.value) })}
                 min={1}
               />
             </div>
@@ -240,8 +249,8 @@ export default function QuizDetailsEditor() {
               <Form.Label>Due Date</Form.Label>
               <Form.Control 
                 type="date" 
-                value={quizData.due} 
-                onChange={(e) => setQuizData({ ...quizData, due: e.target.value })} 
+                value={quizData.dueDate} 
+                onChange={(e) => setQuizData({ ...quizData, dueDate: e.target.value })} 
               />
             </Form.Group>
           </Col>
@@ -250,8 +259,8 @@ export default function QuizDetailsEditor() {
               <Form.Label>Available Date</Form.Label>
               <Form.Control 
                 type="date" 
-                value={quizData.available} 
-                onChange={(e) => setQuizData({ ...quizData, available: e.target.value })} 
+                value={quizData.availableDate} 
+                onChange={(e) => setQuizData({ ...quizData, availableDate: e.target.value })} 
               />
             </Form.Group>
           </Col>
@@ -260,8 +269,8 @@ export default function QuizDetailsEditor() {
               <Form.Label>Until Date</Form.Label>
               <Form.Control 
                 type="date" 
-                value={quizData.until} 
-                onChange={(e) => setQuizData({ ...quizData, until: e.target.value })} 
+                value={quizData.untilDate} 
+                onChange={(e) => setQuizData({ ...quizData, untilDate: e.target.value })} 
               />
             </Form.Group>
           </Col>
