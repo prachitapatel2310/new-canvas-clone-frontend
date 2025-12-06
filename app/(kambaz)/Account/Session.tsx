@@ -73,7 +73,7 @@ import { useDispatch } from "react-redux";
 // --- START: DEVELOPMENT BYPASS CONFIGURATION ---
 // Set this flag to true to skip API profile fetch and inject a dummy user.
 // Set to false for normal, authenticated behavior.
-const DEV_AUTH_BYPASS = true; // <--- SET THIS TO 'true' FOR STATIC VIEWING
+const DEV_AUTH_BYPASS = false; // <--- SET THIS TO 'true' FOR STATIC VIEWING
 
 const DUMMY_USER = {
   _id: "DUMMY_STUDENT_ID_123",
