@@ -21,32 +21,30 @@ export default function QuizDetailsEditor() {
     title: "", 
     description: "", 
     quizType: "GRADED_QUIZ",
-    // --- UPDATED FIELD NAMES START ---
-    assignmentGroup: "QUIZZES", // Changed to match schema enum
+    assignmentGroup: "QUIZZES",
     points: 0,
     shuffleAnswers: true,
     timeLimit: 20,
     multipleAttempts: false,
-    howManyAttempts: 1, // Renamed from attemptsAllowed (using schema name)
+    howManyAttempts: 1,
     showCorrectAnswers: "IMMEDIATELY",
     accessCode: "",
     oneQuestionAtATime: true,
     webcamRequired: false,
     lockQuestionsAfterAnswering: false,
-    dueDate: "", // Renamed from due
-    availableDate: "", // Renamed from available
-    untilDate: "", // Renamed from until
-    // --- UPDATED FIELD NAMES END ---
+    dueDate: "",
+    availableDate: "",
+    untilDate: "",
   });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchQuiz = async () => {
+      // FIX: Early return for 'new' quiz to prevent 404
       if (!qid || qid === 'new') return;
-      setLoading(true); // Ensure loading is set before fetch
+      setLoading(true);
       try {
         const fetchedQuiz = await client.findQuizById(qid);
-        // Direct assignment works because fetchedQuiz uses schema names, which are now in quizData state
         setQuizData(fetchedQuiz);
       } catch (error) {
         console.error("Error fetching quiz for editor:", error);
@@ -58,8 +56,12 @@ export default function QuizDetailsEditor() {
     if (initialQuiz) {
       setQuizData(initialQuiz);
       setLoading(false);
-    } else {
+    } else if (qid !== 'new') {
+      // Only fetch if qid is a real ID
       fetchQuiz();
+    } else {
+      // qid === 'new' => no fetch needed, use default quizData, stop loading
+      setLoading(false);
     }
   }, [qid, initialQuiz]);
   
