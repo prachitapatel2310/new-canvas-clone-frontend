@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { Button, Dropdown, ListGroup } from "react-bootstrap";
-import { Quiz, QuizQuestion, QuestionType, updateQuiz as updateQuizInReducer } from "../../../../Quizzes/reducer";
+import { Quiz, QuizQuestion, QuestionType, updateQuiz as updateQuizInReducer } from "../../../reducer";
 import type { RootState } from "../../../../../../store";
 import { FaPlus, FaPencilAlt, FaTrash } from "react-icons/fa";
 import { BsGripVertical } from "react-icons/bs";
@@ -13,7 +13,7 @@ import MultipleChoiceEditor from "./MultipleChoiceEditor";
 import TrueFalseEditor from "./TrueFalseEditor";
 import FillBlankEditor from "./FillBlankEditor";
 import { v4 as uuidv4 } from "uuid";
-import * as client from "../../../../Quizzes/client";
+import * as client from "../../../client";
 import { useQuizEditor } from "../QuizEditorContext";
 
 const defaultQuestionFactory = (type: QuestionType): QuizQuestion => ({

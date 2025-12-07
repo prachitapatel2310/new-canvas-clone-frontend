@@ -4,9 +4,9 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { Button, Card, ListGroup } from "react-bootstrap";
-import { Quiz } from "../../../Quizzes/reducer";
+import { Quiz } from "../../reducer";
 import type { RootState } from "../../../../../store";
-import * as client from "../../../Quizzes/client";
+import * as client from "../../client";
 import { FaPencilAlt } from "react-icons/fa";
 import { getAvailability } from "../../quiz.utils";
 

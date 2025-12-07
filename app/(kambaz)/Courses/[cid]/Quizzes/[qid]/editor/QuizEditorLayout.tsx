@@ -7,7 +7,7 @@ import { useParams, usePathname, useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { Button, Nav } from "react-bootstrap";
 import type { RootState } from "../../../../../store";
-import { Quiz, updateQuiz } from "../../../Quizzes/reducer";
+import { Quiz, updateQuiz } from "../../reducer";
 import { QuizEditorProvider, useQuizEditor } from "./QuizEditorContext";
 
 function QuizEditorLayoutInner({ children }: { children: ReactNode }) {

@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import { Form, Button, Card, ListGroup } from "react-bootstrap";
-import { QuizQuestion } from "../../../../Quizzes/reducer";
+import { QuizQuestion } from "../../../reducer";
 import { FaTrash, FaPlus } from "react-icons/fa";
 
 interface Props {

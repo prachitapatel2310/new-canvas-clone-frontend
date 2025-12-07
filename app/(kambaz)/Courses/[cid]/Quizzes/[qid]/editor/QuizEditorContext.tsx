@@ -2,7 +2,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { Quiz } from "../../../Quizzes/reducer";
+import { Quiz } from "../../reducer";
 
 interface QuizEditorContextType {
   saveHandler: ((publish: boolean) => Promise<Quiz | null>) | null;

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Form, Button, Card } from "react-bootstrap";
-import { QuizQuestion } from "../../../../Quizzes/reducer";
+import { QuizQuestion } from "../../../reducer";
 
 interface Props {
   question: QuizQuestion;

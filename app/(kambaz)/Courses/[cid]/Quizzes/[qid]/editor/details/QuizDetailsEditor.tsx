@@ -4,9 +4,9 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { Form, Row, Col, Card } from "react-bootstrap";
-import { Quiz } from "../../../../Quizzes/reducer";
+import { Quiz } from "../../../reducer";
 import type { RootState } from "../../../../../../store";
-import * as client from "../../../../Quizzes/client";
+import * as client from "../../../client";
 import { useQuizEditor } from "../QuizEditorContext";
 
 export default function QuizDetailsEditor() {

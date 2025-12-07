@@ -4,9 +4,9 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { Button, Card, Form, ListGroup, Alert } from "react-bootstrap";
-import { Quiz, QuizQuestion } from "../../../Quizzes/reducer";
+import { Quiz, QuizQuestion } from "../../reducer";
 import type { RootState } from "../../../../../store";
-import * as client from "../../../Quizzes/client";
+import * as client from "../../client";
 import { FaCheckCircle, FaTimesCircle, FaClock } from "react-icons/fa";
 
 export default function QuizTake() {
