@@ -37,3 +37,9 @@ export const toggleQuizPublished = async (quizId: string, published: boolean) =>
   const res = await axiosWithCredentials.put(`${QUIZZES_API}/${quizId}/publish`, { isPublished: published });
   return res.data;
 };
+
+// Quiz Submission Client Function
+export const submitQuiz = async (quizId: string, submission: any) => {
+  const res = await axiosWithCredentials.post(`${QUIZZES_API}/${quizId}/submit`, submission);
+  return res.data;
+};
