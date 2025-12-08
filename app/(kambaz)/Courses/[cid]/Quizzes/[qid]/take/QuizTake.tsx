@@ -41,7 +41,7 @@ export default function QuizTake() {
 
   const isStudent = !["ADMIN", "FACULTY", "INSTRUCTOR"].includes((currentUser?.role ?? "").toUpperCase());
   
-  // ✅ Check if quiz was already taken
+  // Check if quiz was already taken
   useEffect(() => {
     if (isStudent && qid && currentUser?._id) {
       const storedScore = localStorage.getItem(`quiz_${qid}_user_${currentUser._id}_score`);
@@ -55,7 +55,6 @@ export default function QuizTake() {
     }
   }, [qid, currentUser, isStudent]);
 
-  // Function for checking answer locally
   const checkAnswer = (question: QuizQuestion, userAnswer: any): boolean => {
     if (!userAnswer && userAnswer !== false) return false;
 
@@ -79,7 +78,6 @@ export default function QuizTake() {
     }
   };
 
-  // ✅ UPDATED: Calculate score on frontend only
   const handleSubmit = useCallback(async () => {
     if (submitted) return;
 
@@ -91,7 +89,7 @@ export default function QuizTake() {
 
     if (!localQuiz) return;
 
-    // ✅ Calculate score locally
+    // Calculate score locally
     let calculatedScore = 0;
     localQuiz.questions.forEach(q => {
       const studentAnswer = answers[q._id];
@@ -102,7 +100,7 @@ export default function QuizTake() {
       }
     });
 
-    // ✅ Save to localStorage
+    // Save to localStorage
     if (currentUser?._id) {
       localStorage.setItem(`quiz_${qid}_user_${currentUser._id}_score`, String(calculatedScore));
       localStorage.setItem(`quiz_${qid}_user_${currentUser._id}_answers`, JSON.stringify(answers));
@@ -115,7 +113,6 @@ export default function QuizTake() {
 
   }, [submitted, timeRemaining, localQuiz, answers, qid, currentUser]);
 
-  // Redirect faculty to details page
   useEffect(() => {
     if (!isStudent) {
       router.replace(`/Courses/${cid}/Quizzes/${qid}/details`);
@@ -123,7 +120,6 @@ export default function QuizTake() {
     }
   }, [isStudent, cid, qid, router]);
 
-  // Fetch quiz
   useEffect(() => {
     const fetchQuiz = async () => {
       if (!qid || !isStudent) return;
@@ -139,7 +135,6 @@ export default function QuizTake() {
 
         setLocalQuiz(fetchedQuiz);
         
-        // Initialize empty answers (unless already submitted)
         if (!submitted) {
           const initialAnswers: Record<string, any> = {};
           if (fetchedQuiz.questions && Array.isArray(fetchedQuiz.questions)) {
@@ -150,7 +145,6 @@ export default function QuizTake() {
           setAnswers(initialAnswers);
         }
         
-        // Initialize timer (only if not submitted)
         if (fetchedQuiz.timeLimit && !submitted) {
           setTimeRemaining(fetchedQuiz.timeLimit * 60);
         }
@@ -163,11 +157,9 @@ export default function QuizTake() {
       }
     };
 
-    // Try Redux first, then fetch
     if (currentQuiz) {
       setLocalQuiz(currentQuiz);
       
-      // Initialize answers for Redux quiz (unless already submitted)
       if (!submitted) {
         const initialAnswers: Record<string, any> = {};
         if (currentQuiz.questions && Array.isArray(currentQuiz.questions)) {
@@ -187,7 +179,6 @@ export default function QuizTake() {
     }
   }, [qid, currentQuiz, cid, router, isStudent, submitted]);
 
-  // Timer countdown
   useEffect(() => {
     if (timeRemaining === null || timeRemaining <= 0 || submitted) return;
 
@@ -230,7 +221,6 @@ export default function QuizTake() {
     }
   };
 
-  // Loading state
   if (loading || !localQuiz) {
     return (
       <div className="p-4 text-center">
@@ -242,7 +232,6 @@ export default function QuizTake() {
     );
   }
 
-  // Check for no questions
   if (!localQuiz.questions || localQuiz.questions.length === 0) {
     return (
       <div className="p-4">
@@ -359,7 +348,7 @@ export default function QuizTake() {
     );
   };
 
-  // ✅ Results view after submission
+  // ✅ UPDATED: Results view after submission
   if (submitted) {
     const percentage = Math.round((score / localQuiz.points) * 100);
     
@@ -384,13 +373,25 @@ export default function QuizTake() {
                 {percentage}%
               </div>
             </div>
-            <Button 
-              variant="primary" 
-              size="lg"
-              onClick={() => router.push(`/Courses/${cid}/Quizzes`)}
-            >
-              Back to Quizzes
-            </Button>
+            
+            {/* ✅ UPDATED: Navigation buttons */}
+            <div className="d-flex gap-3 justify-content-center">
+              <Button 
+                variant="primary" 
+                size="lg"
+                onClick={() => router.push(`/Courses/${cid}/Quizzes/${qid}/details`)}
+              >
+                Back to Quiz Details
+              </Button>
+              
+              <Button 
+                variant="outline-secondary" 
+                size="lg"
+                onClick={() => router.push(`/Courses/${cid}/Quizzes`)}
+              >
+                All Quizzes
+              </Button>
+            </div>
           </Card.Body>
         </Card>
 
@@ -406,7 +407,7 @@ export default function QuizTake() {
     );
   }
 
-  // ✅ Quiz taking view
+  // Quiz taking view
   return (
     <div id="wd-quiz-take" className="container mt-4" style={{ maxWidth: "900px" }}>
       <div className="d-flex justify-content-between align-items-center mb-3 p-3 bg-light border rounded">
