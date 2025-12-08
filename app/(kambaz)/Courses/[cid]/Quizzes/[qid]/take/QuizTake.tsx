@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
-import { Button, Card, Form, ListGroup, Alert, Badge } from "react-bootstrap";
+import { Button, Card, Form, ListGroup, Alert } from "react-bootstrap";
 import { Quiz, QuizQuestion } from "../../reducer"; 
 import type { RootState } from "../../../../../store";
 import * as client from "../../client";
@@ -14,6 +14,7 @@ export default function QuizTake() {
   const { cid, qid } = useParams() as { cid: string; qid: string };
   const router = useRouter();
 
+  // ✅ FIX: Better Redux selector with error handling
   const quizzesState = useSelector((state: RootState) => {
     try {
       return (state.quizzesReducer as any)?.quizzes || [];
@@ -23,6 +24,7 @@ export default function QuizTake() {
     }
   });
 
+  // ✅ FIX: Safely filter and find quiz
   const quizzes: Quiz[] = Array.isArray(quizzesState) 
     ? quizzesState.filter((q: any) => q && typeof q === 'object' && q._id)
     : [];
@@ -41,20 +43,6 @@ export default function QuizTake() {
 
   const isStudent = !["ADMIN", "FACULTY", "INSTRUCTOR"].includes((currentUser?.role ?? "").toUpperCase());
   
-  // ✅ Check if quiz was already taken
-  useEffect(() => {
-    if (isStudent && qid && currentUser?._id) {
-      const storedScore = localStorage.getItem(`quiz_${qid}_user_${currentUser._id}_score`);
-      const storedAnswers = localStorage.getItem(`quiz_${qid}_user_${currentUser._id}_answers`);
-      
-      if (storedScore !== null && storedAnswers) {
-        setScore(Number(storedScore));
-        setAnswers(JSON.parse(storedAnswers));
-        setSubmitted(true);
-      }
-    }
-  }, [qid, currentUser, isStudent]);
-
   // Function for checking answer locally
   const checkAnswer = (question: QuizQuestion, userAnswer: any): boolean => {
     if (!userAnswer && userAnswer !== false) return false;
@@ -69,7 +57,7 @@ export default function QuizTake() {
       case 'FILL_IN_THE_BLANK':
         if (Array.isArray(question.correctAnswers)) {
           return question.correctAnswers.some(
-            ans => ans.toLowerCase().trim() === String(userAnswer).toLowerCase().trim()
+            ans => ans.toLowerCase() === String(userAnswer).toLowerCase()
           );
         }
         return false;
@@ -79,7 +67,7 @@ export default function QuizTake() {
     }
   };
 
-  // ✅ UPDATED: Calculate score on frontend only
+  // ✅ FIX: Use useCallback to prevent infinite loops
   const handleSubmit = useCallback(async () => {
     if (submitted) return;
 
@@ -91,29 +79,24 @@ export default function QuizTake() {
 
     if (!localQuiz) return;
 
-    // ✅ Calculate score locally
-    let calculatedScore = 0;
-    localQuiz.questions.forEach(q => {
-      const studentAnswer = answers[q._id];
-      const isCorrect = checkAnswer(q, studentAnswer);
+    const submissionAnswers = localQuiz.questions.map(question => ({
+      question: question._id,
+      studentAnswer: answers[question._id] ?? "" 
+    }));
+
+    try {
+      setSubmitted(true); 
       
-      if (isCorrect) {
-        calculatedScore += q.points || 0;
-      }
-    });
+      const newSubmission = await client.submitQuiz(qid, { answers: submissionAnswers }); 
+      setScore(newSubmission.score); 
 
-    // ✅ Save to localStorage
-    if (currentUser?._id) {
-      localStorage.setItem(`quiz_${qid}_user_${currentUser._id}_score`, String(calculatedScore));
-      localStorage.setItem(`quiz_${qid}_user_${currentUser._id}_answers`, JSON.stringify(answers));
-      localStorage.setItem(`quiz_${qid}_user_${currentUser._id}_submittedAt`, new Date().toISOString());
+    } catch (error: any) {
+      console.error("Error submitting quiz attempt:", error);
+      setSubmitted(false); 
+      const errorMessage = error?.response?.data?.message || "Internal Server Error while submitting quiz.";
+      alert(`Submission failed: ${errorMessage}`);
     }
-
-    setScore(calculatedScore);
-    setSubmitted(true);
-    window.scrollTo(0, 0);
-
-  }, [submitted, timeRemaining, localQuiz, answers, qid, currentUser]);
+  }, [submitted, timeRemaining, localQuiz, answers, qid]);
 
   // Redirect faculty to details page
   useEffect(() => {
@@ -123,7 +106,7 @@ export default function QuizTake() {
     }
   }, [isStudent, cid, qid, router]);
 
-  // Fetch quiz
+  // ✅ FIX: Improved fetch logic
   useEffect(() => {
     const fetchQuiz = async () => {
       if (!qid || !isStudent) return;
@@ -139,19 +122,17 @@ export default function QuizTake() {
 
         setLocalQuiz(fetchedQuiz);
         
-        // Initialize empty answers (unless already submitted)
-        if (!submitted) {
-          const initialAnswers: Record<string, any> = {};
-          if (fetchedQuiz.questions && Array.isArray(fetchedQuiz.questions)) {
-            fetchedQuiz.questions.forEach((q: QuizQuestion) => {
-              initialAnswers[q._id] = "";
-            });
-          }
-          setAnswers(initialAnswers);
+        // Initialize empty answers
+        const initialAnswers: Record<string, any> = {};
+        if (fetchedQuiz.questions && Array.isArray(fetchedQuiz.questions)) {
+          fetchedQuiz.questions.forEach((q: QuizQuestion) => {
+            initialAnswers[q._id] = "";
+          });
         }
+        setAnswers(initialAnswers);
         
-        // Initialize timer (only if not submitted)
-        if (fetchedQuiz.timeLimit && !submitted) {
+        // Initialize timer
+        if (fetchedQuiz.timeLimit) {
           setTimeRemaining(fetchedQuiz.timeLimit * 60);
         }
       } catch (error: any) {
@@ -167,25 +148,23 @@ export default function QuizTake() {
     if (currentQuiz) {
       setLocalQuiz(currentQuiz);
       
-      // Initialize answers for Redux quiz (unless already submitted)
-      if (!submitted) {
-        const initialAnswers: Record<string, any> = {};
-        if (currentQuiz.questions && Array.isArray(currentQuiz.questions)) {
-          currentQuiz.questions.forEach((q: QuizQuestion) => {
-            initialAnswers[q._id] = "";
-          });
-        }
-        setAnswers(initialAnswers);
-        
-        if (currentQuiz.timeLimit) {
-          setTimeRemaining(currentQuiz.timeLimit * 60);
-        }
+      // Initialize answers for Redux quiz
+      const initialAnswers: Record<string, any> = {};
+      if (currentQuiz.questions && Array.isArray(currentQuiz.questions)) {
+        currentQuiz.questions.forEach((q: QuizQuestion) => {
+          initialAnswers[q._id] = "";
+        });
+      }
+      setAnswers(initialAnswers);
+      
+      if (currentQuiz.timeLimit) {
+        setTimeRemaining(currentQuiz.timeLimit * 60);
       }
       setLoading(false);
     } else {
       fetchQuiz();
     }
-  }, [qid, currentQuiz, cid, router, isStudent, submitted]);
+  }, [qid, currentQuiz, cid, router, isStudent]);
 
   // Timer countdown
   useEffect(() => {
@@ -242,13 +221,13 @@ export default function QuizTake() {
     );
   }
 
-  // Check for no questions
+  // ✅ FIX: Add safety check for questions
   if (!localQuiz.questions || localQuiz.questions.length === 0) {
     return (
       <div className="p-4">
         <Alert variant="warning">
           <Alert.Heading>No Questions Available</Alert.Heading>
-          <p>This quiz doesn't have any questions yet.</p>
+          <p>This quiz doesnt have any questions yet.</p>
           <Button onClick={() => router.push(`/Courses/${cid}/Quizzes`)}>
             Back to Quizzes
           </Button>
@@ -280,7 +259,7 @@ export default function QuizTake() {
                 ? <FaCheckCircle className="text-success me-2" /> 
                 : <FaTimesCircle className="text-danger me-2" />
             )}
-            <Badge bg="secondary">{q.points} pts</Badge>
+            <small className="text-muted">({q.points} pts)</small>
           </div>
         </Card.Header>
         <Card.Body>
@@ -329,7 +308,7 @@ export default function QuizTake() {
 
                 {showResult && shouldShowCorrectAnswer && (
                   <p className="text-success mt-2">
-                    <strong>Correct Answer:</strong> {String(q.correctAnswer)}
+                    Correct Answer: {String(q.correctAnswer)}
                   </p>
                 )}
               </div>
@@ -347,7 +326,7 @@ export default function QuizTake() {
                 {showResult && shouldShowCorrectAnswer && (
                   <div className="mt-2">
                     <p className="text-success mb-0">
-                      <strong>Correct Answers:</strong> {q.correctAnswers?.join(', ')}
+                      Correct Answers: {q.correctAnswers?.join(', ')}
                     </p>
                   </div>
                 )}
@@ -359,46 +338,32 @@ export default function QuizTake() {
     );
   };
 
-  // ✅ Results view after submission
+  // Results view after submission
   if (submitted) {
-    const percentage = Math.round((score / localQuiz.points) * 100);
-    
     return (
-      <div id="wd-quiz-results" className="container mt-4" style={{ maxWidth: "900px" }}>
-        <h2 className="text-danger mb-4">{localQuiz.title}</h2>
+      <div id="wd-quiz-results" className="container mt-4">
+        <h2 className="text-danger">{localQuiz.title}</h2>
+        <hr />
 
-        <Card className="mb-4 border-success">
-          <Card.Body className="text-center">
-            <h3 className="text-success mb-3">
-              <FaCheckCircle className="me-2" />
-              Quiz Submitted Successfully!
-            </h3>
-            <h2 className="mb-3">
-              Score: {score} / {localQuiz.points}
-            </h2>
-            <div className="progress mb-3" style={{ height: "30px" }}>
-              <div 
-                className={`progress-bar ${percentage >= 70 ? 'bg-success' : percentage >= 50 ? 'bg-warning' : 'bg-danger'}`}
-                style={{ width: `${percentage}%` }}
-              >
-                {percentage}%
-              </div>
+        <Alert variant="success">
+          <div className="d-flex justify-content-between align-items-center">
+            <div>
+              <h4 className="mb-0">Quiz Submitted Successfully!</h4>
+              <p className="mb-0 mt-2">
+                Your score: {score} / {localQuiz.points} ({Math.round((score / localQuiz.points) * 100)}%)
+              </p>
             </div>
-            <Button 
-              variant="primary" 
-              size="lg"
-              onClick={() => router.push(`/Courses/${cid}/Quizzes`)}
-            >
+            <Button variant="primary" onClick={() => router.push(`/Courses/${cid}/Quizzes`)}>
               Back to Quizzes
             </Button>
-          </Card.Body>
-        </Card>
+          </div>
+        </Alert>
 
-        <h4 className="mb-4">Review Your Answers</h4>
+        <h4 className="mt-4 mb-3">Review Your Answers:</h4>
         
         {localQuiz.questions.map((q, idx) => (
-          <div key={q._id} className="mb-3">
-            <h5 className="text-muted">Question {idx + 1}</h5>
+          <div key={q._id}>
+            <h5>Question {idx + 1}</h5>
             <QuestionRenderer q={q} showResult={true} />
           </div>
         ))}
@@ -406,20 +371,19 @@ export default function QuizTake() {
     );
   }
 
-  // ✅ Quiz taking view
+  // Quiz taking view
   return (
-    <div id="wd-quiz-take" className="container mt-4" style={{ maxWidth: "900px" }}>
-      <div className="d-flex justify-content-between align-items-center mb-3 p-3 bg-light border rounded">
-        <h2 className="text-danger mb-0">{localQuiz.title}</h2>
+    <div id="wd-quiz-take" className="container mt-4">
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h2 className="text-danger">{localQuiz.title}</h2>
         {timeRemaining !== null && (
-          <div 
-            className={`px-3 py-2 rounded fw-bold ${timeRemaining < 60 ? 'bg-danger text-white' : 'bg-white border'}`}
-          >
+          <Alert variant={timeRemaining < 60 ? "danger" : "info"} className="mb-0 py-2">
             <FaClock className="me-2" />
-            {formatTime(timeRemaining)}
-          </div>
+            Time Remaining: {formatTime(timeRemaining)}
+          </Alert>
         )}
       </div>
+      <hr />
 
       <ListGroup className="mb-4">
         <ListGroup.Item>
@@ -443,10 +407,10 @@ export default function QuizTake() {
               onClick={handlePrevious}
               disabled={currentQuestionIndex === 0}
             >
-              ← Previous
+              Previous
             </Button>
 
-            <span className="badge bg-secondary fs-6">
+            <span className="text-muted">
               Question {currentQuestionIndex + 1} of {localQuiz.questions.length}
             </span>
 
@@ -455,7 +419,7 @@ export default function QuizTake() {
                 variant="primary" 
                 onClick={handleNext}
               >
-                Next →
+                Next
               </Button>
             ) : (
               <Button 
@@ -471,13 +435,13 @@ export default function QuizTake() {
       ) : (
         <>
           {localQuiz.questions.map((q, idx) => (
-            <div key={q._id} className="mb-4">
-              <h5 className="text-muted">Question {idx + 1}</h5>
+            <div key={q._id}>
+              <h5>Question {idx + 1}</h5>
               <QuestionRenderer q={q} />
             </div>
           ))}
 
-          <div className="d-flex justify-content-end mt-5 mb-5">
+          <div className="d-flex justify-content-end mt-4">
             <Button 
               variant="success" 
               size="lg" 
