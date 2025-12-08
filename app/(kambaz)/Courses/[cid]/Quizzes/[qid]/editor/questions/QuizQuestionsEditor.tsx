@@ -1,4 +1,4 @@
-// app/Courses/[cid]/Quizzes/[qid]/editor/questions/QuizQuestionsEditor.tsx
+// app/(kambaz)/Courses/[cid]/Quizzes/[qid]/editor/questions/QuizQuestionsEditor.tsx
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
@@ -16,7 +16,7 @@ import * as client from "../../../client";
 import { useQuizEditor } from "../QuizEditorContext";
 
 const defaultQuestionFactory = (type: QuestionType): QuizQuestion => ({
-  _id: new Date().getTime().toString(), 
+  _id: new Date().getTime().toString(), // ✅ Fixed: Simple timestamp-based ID
   title: `New ${type.replace(/_/g, ' ')} Question`,
   questionType: type, 
   points: 10,

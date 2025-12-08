@@ -1,4 +1,4 @@
-// app/Courses/[cid]/Quizzes/[qid]/editor/QuizEditorLayout.tsx
+// app/(kambaz)/Courses/[cid]/Quizzes/[qid]/editor/QuizEditorLayout.tsx
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { ReactNode } from "react";
@@ -79,6 +79,7 @@ function QuizEditorLayoutInner({ children }: { children: ReactNode }) {
       <h3 className="text-danger">{quizTitle}</h3>
       <hr />
 
+      {/* ✅ FIX: Use Link/router for navigation, not state */}
       <Nav variant="tabs" className="mb-3">
         <Nav.Item>
           <Nav.Link 
@@ -100,6 +101,7 @@ function QuizEditorLayoutInner({ children }: { children: ReactNode }) {
         </Nav.Item>
       </Nav>
 
+      {/* ✅ FIX: Render children from page.tsx files */}
       <div id="wd-quiz-editor-content">
         {children}
       </div>

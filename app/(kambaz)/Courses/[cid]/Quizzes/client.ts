@@ -2,6 +2,8 @@
 import axios from "axios";
 import { Quiz } from "./reducer";
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+
 const axiosWithCredentials = axios.create({ withCredentials: true });
 const HTTP_SERVER = process.env.NEXT_PUBLIC_HTTP_SERVER;
 const COURSES_API = `${HTTP_SERVER}/api/courses`;
@@ -47,4 +49,5 @@ export const submitQuiz = async (quizId: string, submission: any) => {
     console.error("Submit quiz error:", error);
     throw error;
   }
+
 };
