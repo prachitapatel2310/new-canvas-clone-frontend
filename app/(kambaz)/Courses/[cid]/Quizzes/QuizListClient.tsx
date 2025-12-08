@@ -1,10 +1,10 @@
 // app/(kambaz)/Courses/[cid]/Quizzes/QuizListClient.tsx
 "use client";
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { ListGroup, Button, Dropdown, Form } from "react-bootstrap";
+import { ListGroup, Button, Dropdown, Form, Badge } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../../../store";
 import { FaCheckCircle, FaEllipsisV, FaPlus } from "react-icons/fa";
@@ -17,25 +17,32 @@ import {
   togglePublished as togglePublishedInReducer,
 } from "../Quizzes/reducer";
 import { getAvailability } from "./quiz.utils";
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
+// ✅ ADD: Utility function for getting scores
+const getQuizScore = (quizId: string, userId: string): number | null => {
+  if (typeof window === 'undefined') return null;
+  const storedScore = localStorage.getItem(`quiz_${quizId}_user_${userId}_score`);
+  return storedScore !== null ? Number(storedScore) : null;
+};
+
 export default function QuizListClient() {
   const { cid } = useParams() as { cid?: string };
-  // Quizzes now read from the schema-aligned reducer
   const quizzes: Quiz[] = useSelector((state: RootState) => (state.quizzesReducer as any).quizzes) || [];
   const { currentUser } = useSelector((state: RootState) => state.accountReducer);
   const dispatch = useDispatch();
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [quizScores, setQuizScores] = useState<Record<string, number | null>>({}); // ✅ ADD: State for scores
 
   const role = (currentUser?.role ?? "").toUpperCase();
   const isFaculty = ["ADMIN", "FACULTY", "INSTRUCTOR"].includes(role);
+  const isStudent = !isFaculty;
 
   const fetchQuizzes = async () => {
     if (!cid) return;
     setLoading(true);
     try {
-      // Fetches quizzes via the backend REST API
       const fetchedQuizzes = await client.findQuizzesForCourse(cid);
       dispatch(setQuizzes(fetchedQuizzes));
     } catch (error) {
@@ -49,8 +56,18 @@ export default function QuizListClient() {
     if (cid) {
       fetchQuizzes();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cid]);
+
+  // ✅ ADD: Load scores from localStorage for students
+  useEffect(() => {
+    if (isStudent && currentUser?._id) {
+      const scores: Record<string, number | null> = {};
+      quizzes.forEach(quiz => {
+        scores[quiz._id] = getQuizScore(quiz._id, currentUser._id);
+      });
+      setQuizScores(scores);
+    }
+  }, [quizzes, currentUser, isStudent]);
 
   const handleCreateQuiz = async () => {
     if (!cid || !isFaculty) return;
@@ -61,13 +78,8 @@ export default function QuizListClient() {
         description: "",
         questions: [],
       };
-      // Creates quiz on the backend and gets the new ID
       const newQuiz = await client.createQuizForCourse(cid, newQuizData);
-      
-      // Update local state by re-fetching
       await fetchQuizzes(); 
-      
-      // Navigate to the editor for the new quiz
       router.push(`/Courses/${cid}/Quizzes/${newQuiz._id}/editor/details`);
     } catch (error) {
       console.error("Error creating quiz:", error);
@@ -78,10 +90,15 @@ export default function QuizListClient() {
   const handleDelete = async (quizId: string) => {
     if (!isFaculty || !confirm('Are you sure you want to delete this quiz?')) return;
     try {
-      // Deletes quiz on the backend
       await client.deleteQuiz(quizId);
-      // Updates Redux state
       dispatch(deleteQuizInReducer(quizId));
+      
+      // ✅ Also clear student scores for this quiz
+      if (currentUser?._id) {
+        localStorage.removeItem(`quiz_${quizId}_user_${currentUser._id}_score`);
+        localStorage.removeItem(`quiz_${quizId}_user_${currentUser._id}_answers`);
+        localStorage.removeItem(`quiz_${quizId}_user_${currentUser._id}_submittedAt`);
+      }
     } catch (error) {
       console.error("Error deleting quiz:", error);
       alert("Failed to delete quiz on server.");
@@ -91,11 +108,8 @@ export default function QuizListClient() {
   const handleTogglePublished = async (quiz: Quiz) => {
     if (!isFaculty) return;
     try {
-      // Uses the schema-aligned field name `isPublished`
       const newPublishedStatus = !quiz.isPublished; 
-      // Toggles published status on the backend
       await client.toggleQuizPublished(quiz._id, newPublishedStatus);
-      // Updates Redux state
       dispatch(togglePublishedInReducer(quiz._id));
     } catch (error) {
       console.error("Error toggling published status:", error);
@@ -103,7 +117,6 @@ export default function QuizListClient() {
     }
   };
 
-  // Filters quizzes: students only see published quizzes
   const filteredQuizzes = quizzes
     .filter((q: Quiz) => isFaculty || q.isPublished)
     .filter((q: Quiz) => q.title.toLowerCase().includes(search.trim().toLowerCase()));
@@ -151,32 +164,55 @@ export default function QuizListClient() {
           </div>
         )}
         {filteredQuizzes.map((quiz: Quiz) => {
-          // Use the schema-aligned date fields for utility function
           const availability = getAvailability(quiz.availableDate, quiz.untilDate); 
           
-          // Faculty go to details, Students go directly to take the quiz
           const linkHref = isFaculty 
             ? `/Courses/${cid}/Quizzes/${quiz._id}/details` 
             : `/Courses/${cid}/Quizzes/${quiz._id}/take`;
 
-          // Format points/questions for display
           const displayPoints = quiz.points === 0 ? "Ungraded" : `${quiz.points} pts`;
           const displayQs = `${quiz.questions?.length ?? 0} Qs`;
 
+          // ✅ ADD: Get student score
+          const userScore = isStudent && currentUser?._id ? quizScores[quiz._id] : null;
+          const hasAttempt = userScore !== null && userScore !== undefined;
+          const percentage = hasAttempt && quiz.points > 0 ? Math.round((userScore / quiz.points) * 100) : 0;
+
           return (
             <ListGroup.Item key={quiz._id} className="p-3 d-flex justify-content-between align-items-start">
-              <div className="d-flex align-items-center">
-                <span className="me-3 fs-4">📄</span>
-                <div>
-                  <Link href={linkHref} className="h5 text-decoration-none text-danger">
-                    {quiz.title}
-                  </Link>
-                  <div className="text-muted mt-1" style={{ fontSize: '0.9rem' }}>
-                    {quiz.quizType.replace('_', ' ')} | 
-                    <span className={`ms-1 ${availability.status === 'Available' ? 'text-success' : 'text-danger'}`}>
-                      {availability.message}
-                    </span> | 
-                    Due {quiz.dueDate} | {displayPoints} | {displayQs}
+              <div className="flex-grow-1">
+                <div className="d-flex align-items-center mb-2">
+                  <span className="me-3 fs-4">📄</span>
+                  <div className="flex-grow-1">
+                    <Link href={linkHref} className="h5 text-decoration-none text-danger">
+                      {quiz.title}
+                    </Link>
+                    <div className="text-muted mt-1" style={{ fontSize: '0.9rem' }}>
+                      {quiz.quizType?.replace('_', ' ') || 'Graded Quiz'} | 
+                      <span className={`ms-1 ${availability.status === 'Available' ? 'text-success' : 'text-danger'}`}>
+                        {availability.message}
+                      </span> | 
+                      Due {quiz.dueDate ? new Date(quiz.dueDate).toLocaleDateString() : 'No due date'} | 
+                      {displayPoints} | {displayQs}
+                      
+                      {/* ✅ ADD: Display Score for Students */}
+                      {isStudent && hasAttempt && (
+                        <Badge 
+                          bg={percentage >= 70 ? 'success' : percentage >= 50 ? 'warning' : 'danger'} 
+                          className="ms-2"
+                        >
+                          <FaCheckCircle className="me-1" />
+                          Score: {userScore}/{quiz.points} ({percentage}%)
+                        </Badge>
+                      )}
+                      
+                      {/* ✅ ADD: Show "Not Attempted" for published quizzes */}
+                      {isStudent && !hasAttempt && quiz.isPublished && (
+                        <Badge bg="secondary" className="ms-2">
+                          Not Attempted
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -186,7 +222,6 @@ export default function QuizListClient() {
                   <span 
                     onClick={() => handleTogglePublished(quiz)} 
                     style={{ cursor: 'pointer' }}
-                    // Use the schema-aligned field name `isPublished`
                     title={quiz.isPublished ? "Published" : "Unpublished"}
                   >
                     {quiz.isPublished 
@@ -196,14 +231,14 @@ export default function QuizListClient() {
                   </span>
 
                   <Dropdown>
-                    <Dropdown.Toggle variant="secondary" size="sm">
+                    <Dropdown.Toggle variant="link" className="text-dark p-0">
                       <FaEllipsisV />
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
                       <Dropdown.Item as={Link} href={`/Courses/${cid}/Quizzes/${quiz._id}/editor/details`}>
                         Edit
                       </Dropdown.Item>
-                      <Dropdown.Item onClick={() => handleDelete(quiz._id)}>
+                      <Dropdown.Item onClick={() => handleDelete(quiz._id)} className="text-danger">
                         Delete
                       </Dropdown.Item>
                       <Dropdown.Item onClick={() => handleTogglePublished(quiz)}>
