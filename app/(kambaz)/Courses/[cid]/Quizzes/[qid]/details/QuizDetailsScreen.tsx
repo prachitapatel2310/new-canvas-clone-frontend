@@ -8,7 +8,7 @@ import { Button, Card, ListGroup, Alert, Badge } from "react-bootstrap";
 import { Quiz } from "../../reducer";
 import type { RootState } from "../../../../../store";
 import * as client from "../../client";
-import { FaClock, FaEdit, FaCheckCircle, FaPlay } from "react-icons/fa";
+import { FaClock, FaEdit, FaCheckCircle, FaPlay, FaRedo } from "react-icons/fa";
 
 export default function QuizDetailsScreen() {
   const { cid, qid } = useParams() as { cid: string; qid: string };
@@ -60,7 +60,9 @@ export default function QuizDetailsScreen() {
       return date.toLocaleDateString('en-US', { 
         year: 'numeric', 
         month: 'long', 
-        day: 'numeric' 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
       });
     } catch {
       return "Invalid date";
@@ -68,7 +70,14 @@ export default function QuizDetailsScreen() {
   };
 
   if (loading || !quiz) {
-    return <div className="p-4">Loading quiz details...</div>;
+    return (
+      <div className="p-4 text-center">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+        <p className="mt-3">Loading quiz details...</p>
+      </div>
+    );
   }
 
   // Check availability
@@ -84,7 +93,7 @@ export default function QuizDetailsScreen() {
   return (
     <div className="container mt-4" style={{ maxWidth: "900px" }}>
       <Card>
-        <Card.Header className="bg-white">
+        <Card.Header className="bg-white border-bottom">
           <div className="d-flex justify-content-between align-items-center">
             <h2 className="text-danger mb-0">{quiz.title}</h2>
             {isFaculty && (
@@ -100,127 +109,185 @@ export default function QuizDetailsScreen() {
         </Card.Header>
 
         <Card.Body>
-          {/* ✅ Show Score if Student Has Taken Quiz */}
+          {/* ✅ Show Score Card if Student Has Completed Quiz */}
           {isStudent && hasAttempt && (
-            <Alert variant="success" className="mb-4">
-              <div className="d-flex justify-content-between align-items-center">
-                <div>
-                  <h4 className="mb-0">
-                    <FaCheckCircle className="me-2" />
-                    Quiz Completed!
-                  </h4>
-                  <h3 className="mt-2 mb-0">Score: {userScore} / {quiz.points} ({percentage}%)</h3>
+            <Card className="mb-4 border-success">
+              <Card.Body className="text-center bg-success-subtle">
+                <h4 className="text-success mb-3">
+                  <FaCheckCircle className="me-2" />
+                  Quiz Completed!
+                </h4>
+                <h2 className="mb-3">Your Score: {userScore} / {quiz.points}</h2>
+                <div className="progress mb-3" style={{ height: "25px" }}>
+                  <div 
+                    className={`progress-bar ${percentage >= 70 ? 'bg-success' : percentage >= 50 ? 'bg-warning' : 'bg-danger'}`}
+                    style={{ width: `${percentage}%` }}
+                  >
+                    {percentage}%
+                  </div>
                 </div>
-                <Badge 
-                  bg={percentage >= 70 ? 'success' : percentage >= 50 ? 'warning' : 'danger'}
-                  className="fs-5 p-3"
-                >
-                  {percentage}%
+                <Badge bg={percentage >= 70 ? 'success' : percentage >= 50 ? 'warning' : 'danger'} className="fs-5 px-4 py-2">
+                  {percentage >= 70 ? 'Excellent!' : percentage >= 50 ? 'Good Job!' : 'Keep Trying!'}
                 </Badge>
-              </div>
-            </Alert>
+              </Card.Body>
+            </Card>
           )}
 
-          <h4 className="mb-4">Quiz Details</h4>
+          {/* Quiz Information */}
+          <h4 className="mb-4">Quiz Information</h4>
 
-          <ListGroup variant="flush">
-            <ListGroup.Item>
-              <strong>Quiz Type:</strong> {quiz.quizType?.replace(/_/g, ' ') || 'Graded Quiz'}
+          <ListGroup variant="flush" className="mb-4">
+            <ListGroup.Item className="d-flex justify-content-between">
+              <strong>Quiz Type:</strong> 
+              <span>{quiz.quizType?.replace(/_/g, ' ') || 'Graded Quiz'}</span>
             </ListGroup.Item>
             
-            <ListGroup.Item>
-              <strong>Points:</strong> {quiz.points}
+            <ListGroup.Item className="d-flex justify-content-between">
+              <strong>Total Points:</strong> 
+              <span className="badge bg-primary">{quiz.points} pts</span>
             </ListGroup.Item>
             
-            <ListGroup.Item>
-              <strong>Questions:</strong> {quiz.numQuestions || quiz.questions?.length || 0}
+            <ListGroup.Item className="d-flex justify-content-between">
+              <strong>Number of Questions:</strong> 
+              <span>{quiz.numQuestions || quiz.questions?.length || 0}</span>
             </ListGroup.Item>
             
-            <ListGroup.Item>
-              <strong>Time Limit:</strong> {quiz.timeLimit ? (
-                <>
-                  <FaClock className="me-2" />
-                  {quiz.timeLimit} Minutes
-                </>
-              ) : 'No time limit'}
+            <ListGroup.Item className="d-flex justify-content-between">
+              <strong>Time Limit:</strong> 
+              <span>
+                {quiz.timeLimit ? (
+                  <>
+                    <FaClock className="me-2" />
+                    {quiz.timeLimit} Minutes
+                  </>
+                ) : 'No time limit'}
+              </span>
             </ListGroup.Item>
             
-            <ListGroup.Item>
-              <strong>Attempts Allowed:</strong> {quiz.howManyAttempts || 1}
+            <ListGroup.Item className="d-flex justify-content-between">
+              <strong>Attempts Allowed:</strong> 
+              <span>{quiz.howManyAttempts || 1}</span>
             </ListGroup.Item>
             
-            <ListGroup.Item>
-              <strong>Due:</strong> {formatDate(quiz.dueDate)}
-            </ListGroup.Item>
-
-            <ListGroup.Item>
-              <strong>Available From:</strong> {formatDate(quiz.availableDate)}
-            </ListGroup.Item>
-
-            <ListGroup.Item>
-              <strong>Available Until:</strong> {formatDate(quiz.untilDate)}
+            <ListGroup.Item className="d-flex justify-content-between">
+              <strong>Assignment Group:</strong> 
+              <span>{quiz.assignmentGroup?.replace(/_/g, ' ') || 'Quizzes'}</span>
             </ListGroup.Item>
           </ListGroup>
 
-          {/* Availability Warning */}
+          {/* Dates Section */}
+          <h5 className="mb-3 mt-4">Important Dates</h5>
+          <ListGroup variant="flush" className="mb-4">
+            <ListGroup.Item className="d-flex justify-content-between">
+              <strong>Due Date:</strong> 
+              <span>{formatDate(quiz.dueDate)}</span>
+            </ListGroup.Item>
+
+            <ListGroup.Item className="d-flex justify-content-between">
+              <strong>Available From:</strong> 
+              <span>{formatDate(quiz.availableDate)}</span>
+            </ListGroup.Item>
+
+            <ListGroup.Item className="d-flex justify-content-between">
+              <strong>Available Until:</strong> 
+              <span>{formatDate(quiz.untilDate)}</span>
+            </ListGroup.Item>
+          </ListGroup>
+
+          {/* Quiz Settings */}
+          {(quiz.shuffleAnswers || quiz.oneQuestionAtATime || quiz.webcamRequired) && (
+            <>
+              <h5 className="mb-3 mt-4">Quiz Settings</h5>
+              <ListGroup variant="flush" className="mb-4">
+                {quiz.shuffleAnswers && (
+                  <ListGroup.Item>✓ Answers will be shuffled</ListGroup.Item>
+                )}
+                {quiz.oneQuestionAtATime && (
+                  <ListGroup.Item>✓ One question at a time</ListGroup.Item>
+                )}
+                {quiz.webcamRequired && (
+                  <ListGroup.Item>⚠️ Webcam required</ListGroup.Item>
+                )}
+                {quiz.lockQuestionsAfterAnswering && (
+                  <ListGroup.Item>🔒 Questions locked after answering</ListGroup.Item>
+                )}
+              </ListGroup>
+            </>
+          )}
+
+          {/* Availability Warnings */}
           {!isAvailable && isStudent && (
             <Alert variant="warning" className="mt-4">
-              <strong>Unknown Availability.</strong> You cannot start the quiz at this time.
+              <strong>Quiz Not Available.</strong> This quiz is not currently available to take.
             </Alert>
           )}
 
-          {/* Not Published Warning */}
           {!quiz.isPublished && isStudent && (
             <Alert variant="info" className="mt-4">
               <strong>This quiz is not published yet.</strong> Please check back later.
             </Alert>
           )}
 
-          {/* Student Actions */}
-          {isStudent && (
-            <div className="mt-4 d-flex gap-2">
-              {canTakeQuiz ? (
+          {/* Action Buttons */}
+          <div className="mt-4 d-flex gap-3">
+            {/* Student Buttons */}
+            {isStudent && (
+              <>
+                {canTakeQuiz ? (
+                  <Button 
+                    variant="danger" 
+                    size="lg"
+                    onClick={() => router.push(`/Courses/${cid}/Quizzes/${qid}/take`)}
+                  >
+                    {hasAttempt ? (
+                      <>
+                        <FaRedo className="me-2" />
+                        Retake Quiz
+                      </>
+                    ) : (
+                      <>
+                        <FaPlay className="me-2" />
+                        Start Quiz
+                      </>
+                    )}
+                  </Button>
+                ) : (
+                  <Button variant="secondary" size="lg" disabled>
+                    {!quiz.isPublished ? 'Not Published' : 'Not Available'}
+                  </Button>
+                )}
+                
                 <Button 
-                  variant="danger" 
+                  variant="outline-secondary"
                   size="lg"
-                  onClick={() => router.push(`/Courses/${cid}/Quizzes/${qid}/take`)}
+                  onClick={() => router.push(`/Courses/${cid}/Quizzes`)}
                 >
-                  <FaPlay className="me-2" />
-                  {hasAttempt ? 'Retake Quiz' : 'Start Quiz'}
+                  Back to All Quizzes
                 </Button>
-              ) : (
-                <Button variant="secondary" size="lg" disabled>
-                  Quiz Not Available
-                </Button>
-              )}
-              
-              <Button 
-                variant="outline-secondary"
-                onClick={() => router.push(`/Courses/${cid}/Quizzes`)}
-              >
-                Back to Quizzes
-              </Button>
-            </div>
-          )}
+              </>
+            )}
 
-          {/* Faculty Actions */}
-          {isFaculty && (
-            <div className="mt-4 d-flex gap-2">
-              <Button 
-                variant="primary"
-                onClick={() => router.push(`/Courses/${cid}/Quizzes/${qid}/editor/details`)}
-              >
-                <FaEdit className="me-2" />
-                Edit
-              </Button>
-              <Button 
-                variant="outline-secondary"
-                onClick={() => router.push(`/Courses/${cid}/Quizzes`)}
-              >
-                Back to Quizzes
-              </Button>
-            </div>
-          )}
+            {/* Faculty Buttons */}
+            {isFaculty && (
+              <>
+                <Button 
+                  variant="primary"
+                  size="lg"
+                  onClick={() => router.push(`/Courses/${cid}/Quizzes/${qid}/editor/details`)}
+                >
+                  <FaEdit className="me-2" />
+                  Edit Quiz
+                </Button>
+                <Button 
+                  variant="outline-secondary"
+                  size="lg"
+                  onClick={() => router.push(`/Courses/${cid}/Quizzes`)}
+                >
+                  Back to Quizzes
+                </Button>
+              </>
+            )}
+          </div>
         </Card.Body>
       </Card>
     </div>
