@@ -2,7 +2,6 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { ReactNode } from "react";
-import Link from "next/link";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { Button, Nav } from "react-bootstrap";
@@ -53,6 +52,9 @@ function QuizEditorLayoutInner({ children }: { children: ReactNode }) {
     }
   };
 
+  const isDetailsActive = pathname?.includes('/editor/details');
+  const isQuestionsActive = pathname?.includes('/editor/questions');
+
   return (
     <div id="wd-quiz-editor-layout">
       <div className="d-flex justify-content-end align-items-center mb-3">
@@ -79,29 +81,26 @@ function QuizEditorLayoutInner({ children }: { children: ReactNode }) {
       <h3 className="text-danger">{quizTitle}</h3>
       <hr />
 
-      {/* ✅ FIX: Use Link/router for navigation, not state */}
+      {/* ✅ FIXED: Use regular <a> tags with href */}
       <Nav variant="tabs" className="mb-3">
         <Nav.Item>
           <Nav.Link 
-            as={Link} 
             href={`/Courses/${cid}/Quizzes/${qid}/editor/details`}
-            active={pathname?.endsWith('details')}
+            active={isDetailsActive}
           >
             Details
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
           <Nav.Link 
-            as={Link} 
             href={`/Courses/${cid}/Quizzes/${qid}/editor/questions`}
-            active={pathname?.endsWith('questions')}
+            active={isQuestionsActive}
           >
             Questions
           </Nav.Link>
         </Nav.Item>
       </Nav>
 
-      {/* ✅ FIX: Render children from page.tsx files */}
       <div id="wd-quiz-editor-content">
         {children}
       </div>
