@@ -1,4 +1,44 @@
 /* Desktop Sidebar */
+
+/* app/(kambaz)/KambazNavigation.css */
+/* Add this at the TOP of the file */
+
+/* CRITICAL: Sidebar must always be on top */
+#wd-sidebar,
+#wd-sidebar-wrapper {
+  position: fixed !important;
+  z-index: 99999 !important;
+  pointer-events: auto !important;
+  left: 0 !important;
+  top: 0 !important;
+}
+
+/* Ensure all sidebar links are clickable */
+.wd-nav-link,
+.wd-nav-item {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  z-index: 99999 !important;
+}
+
+/* Main content should not overlap sidebar */
+.wd-main-content-offset {
+  margin-left: 96px !important;
+  position: relative;
+  z-index: 1;
+}
+
+/* Quiz editor should not block sidebar */
+#wd-quiz-editor-layout,
+#wd-quiz-editor-content {
+  position: relative;
+  z-index: 1;
+  max-width: 100%;
+}
+
+/* Rest of your existing CSS below... */
+
+
 #wd-sidebar {
   position: fixed;
   left: 0;
