@@ -79,6 +79,16 @@ function QuizEditorLayoutInner({ children }: { children: ReactNode }) {
 
   return (
     <div id="wd-quiz-editor-layout">
+      {/* ✅ ADD: Back to Quizzes button */}
+      <div className="mb-3">
+      <Button 
+        variant="outline-secondary" 
+        size="sm"
+        onClick={() => router.push(`/Courses/${cid}/Quizzes`)}
+      >
+        ← Back to Quizzes
+      </Button>
+      </div>
       <div className="d-flex justify-content-end align-items-center mb-3">
         <Button variant="secondary" className="me-2" onClick={handleCancel}>
           Cancel
