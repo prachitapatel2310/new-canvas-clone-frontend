@@ -16,7 +16,7 @@ import * as client from "../../../client";
 import { useQuizEditor } from "../QuizEditorContext";
 
 const defaultQuestionFactory = (type: QuestionType): QuizQuestion => ({
-  _id: new Date().getTime().toString(), // ✅ Fixed: Simple timestamp-based ID
+  _id: new Date().getTime().toString(),
   title: `New ${type.replace(/_/g, ' ')} Question`,
   questionType: type, 
   points: 10,
@@ -81,7 +81,6 @@ export default function QuizQuestionsEditor() {
   };
 
   const handleCancelEdit = () => {
-    // If the question is new (not saved yet), remove it
     const editingQuestion = questions.find(q => q._id === editingQuestionId);
     if (editingQuestion && !editingQuestion.questionText) {
       setQuestions(questions.filter(q => q._id !== editingQuestionId));
@@ -95,7 +94,7 @@ export default function QuizQuestionsEditor() {
     }
   };
 
-  // Register save handler with context
+  // ✅ FIXED: Register save handler with context
   useEffect(() => {
     const handleSaveAllQuestions = async (publish: boolean = false): Promise<Quiz | null> => {
       if (editingQuestionId) {
@@ -103,17 +102,31 @@ export default function QuizQuestionsEditor() {
         return null;
       }
       
+      // ✅ FIX: Fetch the latest quiz if currentQuiz is null
+      let quizToUpdate = currentQuiz;
+      
+      if (!quizToUpdate) {
+        try {
+          quizToUpdate = await client.findQuizById(qid);
+        } catch (error) {
+          console.error("Failed to fetch quiz:", error);
+          alert("Failed to load quiz data. Please refresh the page.");
+          return null;
+        }
+      }
+      
       const updatedQuiz: Quiz = {
-        ...(currentQuiz as Quiz),
+        ...quizToUpdate,
         questions: questions,
         points: questions.reduce((sum, q) => sum + q.points, 0),
         numQuestions: questions.length,
-        isPublished: publish,
+        isPublished: publish ? true : quizToUpdate.isPublished, // ✅ FIX: Preserve existing publish state if not publishing
       } as Quiz;
       
       try {
         const savedQuiz = await client.updateQuiz(updatedQuiz);
         setQuestions(savedQuiz.questions);
+        dispatch(updateQuizInReducer(savedQuiz)); // ✅ Update Redux
         return savedQuiz;
       } catch (error) {
         console.error("Error saving questions:", error);
@@ -123,7 +136,7 @@ export default function QuizQuestionsEditor() {
     };
 
     setSaveHandler(handleSaveAllQuestions);
-  }, [questions, editingQuestionId, currentQuiz, setSaveHandler]);
+  }, [questions, editingQuestionId, currentQuiz, qid, dispatch, setSaveHandler]);
 
   if (loading) return <p>Loading questions editor...</p>;
 

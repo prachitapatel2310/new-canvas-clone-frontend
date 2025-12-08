@@ -1,13 +1,14 @@
 // app/(kambaz)/Courses/[cid]/Quizzes/[qid]/editor/QuizEditorLayout.tsx
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { ReactNode } from "react";
+import React, { ReactNode, useState, useEffect } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { Button, Nav } from "react-bootstrap";
 import type { RootState } from "../../../../../store";
 import { Quiz, updateQuiz } from "../../reducer";
 import { QuizEditorProvider, useQuizEditor } from "./QuizEditorContext";
+import * as client from "../../client";
 
 function QuizEditorLayoutInner({ children }: { children: ReactNode }) {
   const { cid, qid } = useParams() as { cid: string; qid: string };
@@ -18,7 +19,28 @@ function QuizEditorLayoutInner({ children }: { children: ReactNode }) {
 
   const quizzes: Quiz[] = useSelector((state: RootState) => (state.quizzesReducer as any).quizzes) || [];
   const currentQuiz: Quiz | undefined = quizzes.find((q) => q._id === qid);
-  const quizTitle = currentQuiz?.title || "Loading Quiz...";
+  
+  // ✅ ADD: State for quiz title
+  const [quizTitle, setQuizTitle] = useState(currentQuiz?.title || "");
+
+  // ✅ ADD: Fetch quiz if not in Redux
+  useEffect(() => {
+    const fetchQuiz = async () => {
+      if (!currentQuiz && qid) {
+        try {
+          const fetchedQuiz = await client.findQuizById(qid);
+          setQuizTitle(fetchedQuiz.title);
+          dispatch(updateQuiz(fetchedQuiz));
+        } catch (error) {
+          console.error("Error fetching quiz:", error);
+          setQuizTitle("Quiz");
+        }
+      } else if (currentQuiz) {
+        setQuizTitle(currentQuiz.title);
+      }
+    };
+    fetchQuiz();
+  }, [qid, currentQuiz, dispatch]);
 
   const handleSaveAndPublish = async () => {
     if (!saveHandler) {
@@ -78,10 +100,9 @@ function QuizEditorLayoutInner({ children }: { children: ReactNode }) {
         </Button>
       </div>
 
-      <h3 className="text-danger">{quizTitle}</h3>
+      <h3 className="text-danger">{quizTitle || "Loading Quiz..."}</h3>
       <hr />
 
-      {/* ✅ FIXED: Use regular <a> tags with href */}
       <Nav variant="tabs" className="mb-3">
         <Nav.Item>
           <Nav.Link 
