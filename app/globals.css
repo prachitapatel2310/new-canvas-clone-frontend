@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Assignments page: keep page fixed and hide visible scrollbars
+   The inner container can still scroll with wheel/trackpad but no scrollbar is shown. */
+#wd-assignments-page {
+  height: calc(100vh - 56px); /* leave room for header/navbar */
+  overflow: hidden;
+}
+
+#wd-assignments-container {
+  height: 100%;
+  overflow-y: auto;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+#wd-assignments-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}

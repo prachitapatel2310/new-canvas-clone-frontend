@@ -1,0 +1,256 @@
+/* Desktop Sidebar */
+#wd-sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  /* slightly narrower sidebar so app content has more room */
+  width: 96px;
+  height: 100vh;
+  background-color: #000;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+}
+
+#wd-neu-logo {
+  padding: 15px 10px;
+  background-color: #000;
+  text-align: center;
+  text-decoration: none;
+}
+
+#wd-neu-logo img {
+  width: 50px;
+  height: 50px;
+}
+
+#wd-neu-title {
+  color: #333;
+  font-size: 0.75rem;
+  margin-top: 5px;
+  font-weight: normal;
+  line-height: 1.2;
+}
+
+.wd-nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.wd-nav-item {
+  width: 100%;
+}
+
+.wd-nav-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px 5px;
+  text-decoration: none;
+  color: #dc3545;
+  background-color: #000;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.wd-nav-link:hover {
+  background-color: #1a1a1a;
+  color: #dc3545;
+}
+
+.wd-nav-link.active {
+  background-color: #fff;
+  color: #dc3545;
+}
+
+.wd-nav-icon {
+  width: 35px;
+  height: 35px;
+  margin-bottom: 5px;
+  fill: currentColor;
+}
+
+.wd-nav-text {
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Hamburger Menu for Mobile - use app accent color, slightly thicker lines */
+#wd-hamburger-btn {
+  display: none;
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 1065; /* above some overlays */
+  background: transparent;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+}
+
+#wd-hamburger-btn:hover {
+  background-color: rgba(0,0,0,0.04);
+}
+
+/* make the three bars red and a bit thicker/rounded to match the logo */
+.wd-hamburger-icon {
+  width: 24px;
+  height: 4px;
+  background-color: #dc3545; /* app accent color */
+  margin: 4px 0;
+  display: block;
+  border-radius: 3px;
+  transition: 0.2s;
+}
+
+/* Mobile Menu Overlay */
+#wd-mobile-menu {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 80%;
+  max-width: 400px;
+  height: 100vh;
+  background-color: #fff;
+  z-index: 1060;
+  transition: left 0.3s ease;
+  overflow-y: auto;
+}
+
+#wd-mobile-menu.show {
+  left: 0;
+}
+
+.wd-mobile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e9ecef;
+  background: #fff;
+}
+
+.wd-mobile-title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #333;
+}
+
+#wd-close-btn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #999;
+  cursor: pointer;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wd-mobile-nav-list {
+  margin: 20px 0;
+  padding: 0;
+}
+
+.wd-mobile-nav-list li {
+  list-style: none;
+}
+
+.wd-mobile-nav-link {
+  text-decoration: none;
+  color: #dc3545; /* bright red */
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 22px 0; /* slightly taller */
+}
+
+.wd-mobile-nav-link:hover,
+.wd-mobile-nav-link.active {
+  background: transparent;
+  color: #c82333;
+}
+
+.wd-mobile-nav-icon {
+  font-size: 34px; /* larger icon */
+  line-height: 1;
+}
+
+.wd-mobile-nav-text {
+  font-size: 22px; /* larger label */
+  font-weight: 500;
+}
+
+/* NEU link area (top) */
+.wd-mobile-body .mb-3 {
+  padding-top: 12px;
+  padding-bottom: 8px;
+}
+
+/* Close button (Offcanvas default close) */
+.btn-close {
+  filter: none;
+  opacity: 1;
+}
+
+/* Overlay backdrop */
+#wd-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1055;
+  display: none;
+}
+
+#wd-overlay.show {
+  display: block;
+}
+
+/* small 3-line logo used in mobile brand (no text) - accent color, centered */
+.wd-logo-lines {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 8px;
+  align-items: center;
+  margin: 0;
+}
+.wd-logo-line {
+  width: 28px;
+  height: 4px;               
+  background-color: #dc3545;    /* use accent color */
+  display: block;
+  border-radius: 4px;        
+  box-shadow: none;
+  transform-origin: center;
+}
+
+/* ensure the mobile brand (logo) sits aligned with the hamburger */
+.navbar .wd-logo-lines {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+}
+
+/* Responsive */
+@media (max-width: 567px) {
+  #wd-sidebar {
+    display: none !important;
+  }
+
+  #wd-hamburger-btn {
+    display: block !important;
+  }
+}
