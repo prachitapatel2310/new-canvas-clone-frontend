@@ -18,7 +18,6 @@ import {
 } from "../Quizzes/reducer";
 import { getAvailability } from "./quiz.utils";
 
-// ✅ ADD: Utility function for getting scores
 const getQuizScore = (quizId: string, userId: string): number | null => {
   if (typeof window === 'undefined') return null;
   const storedScore = localStorage.getItem(`quiz_${quizId}_user_${userId}_score`);
@@ -33,7 +32,7 @@ export default function QuizListClient() {
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
-  const [quizScores, setQuizScores] = useState<Record<string, number | null>>({}); // ✅ ADD: State for scores
+  const [quizScores, setQuizScores] = useState<Record<string, number | null>>({});
 
   const role = (currentUser?.role ?? "").toUpperCase();
   const isFaculty = ["ADMIN", "FACULTY", "INSTRUCTOR"].includes(role);
@@ -58,7 +57,6 @@ export default function QuizListClient() {
     }
   }, [cid]);
 
-  // ✅ ADD: Load scores from localStorage for students
   useEffect(() => {
     if (isStudent && currentUser?._id) {
       const scores: Record<string, number | null> = {};
@@ -93,7 +91,6 @@ export default function QuizListClient() {
       await client.deleteQuiz(quizId);
       dispatch(deleteQuizInReducer(quizId));
       
-      // ✅ Also clear student scores for this quiz
       if (currentUser?._id) {
         localStorage.removeItem(`quiz_${quizId}_user_${currentUser._id}_score`);
         localStorage.removeItem(`quiz_${quizId}_user_${currentUser._id}_answers`);
@@ -166,14 +163,14 @@ export default function QuizListClient() {
         {filteredQuizzes.map((quiz: Quiz) => {
           const availability = getAvailability(quiz.availableDate, quiz.untilDate); 
           
+          // ✅ FIXED: Students → details page, Faculty → editor
           const linkHref = isFaculty 
-            ? `/Courses/${cid}/Quizzes/${quiz._id}/details` 
-            : `/Courses/${cid}/Quizzes/${quiz._id}/take`;
+            ? `/Courses/${cid}/Quizzes/${quiz._id}/editor/details`
+            : `/Courses/${cid}/Quizzes/${quiz._id}/details`;
 
           const displayPoints = quiz.points === 0 ? "Ungraded" : `${quiz.points} pts`;
           const displayQs = `${quiz.questions?.length ?? 0} Qs`;
 
-          // ✅ ADD: Get student score
           const userScore = isStudent && currentUser?._id ? quizScores[quiz._id] : null;
           const hasAttempt = userScore !== null && userScore !== undefined;
           const percentage = hasAttempt && quiz.points > 0 ? Math.round((userScore / quiz.points) * 100) : 0;
@@ -188,14 +185,13 @@ export default function QuizListClient() {
                       {quiz.title}
                     </Link>
                     <div className="text-muted mt-1" style={{ fontSize: '0.9rem' }}>
-                      {quiz.quizType?.replace('_', ' ') || 'Graded Quiz'} | 
+                      {quiz.quizType?.replace(/_/g, ' ') || 'Graded Quiz'} | 
                       <span className={`ms-1 ${availability.status === 'Available' ? 'text-success' : 'text-danger'}`}>
                         {availability.message}
                       </span> | 
                       Due {quiz.dueDate ? new Date(quiz.dueDate).toLocaleDateString() : 'No due date'} | 
                       {displayPoints} | {displayQs}
                       
-                      {/* ✅ ADD: Display Score for Students */}
                       {isStudent && hasAttempt && (
                         <Badge 
                           bg={percentage >= 70 ? 'success' : percentage >= 50 ? 'warning' : 'danger'} 
@@ -206,7 +202,6 @@ export default function QuizListClient() {
                         </Badge>
                       )}
                       
-                      {/* ✅ ADD: Show "Not Attempted" for published quizzes */}
                       {isStudent && !hasAttempt && quiz.isPublished && (
                         <Badge bg="secondary" className="ms-2">
                           Not Attempted
